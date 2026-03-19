@@ -23,9 +23,21 @@ export default function ProjectView({ projectId, walletClient, userAddress }: Pr
 
   const load = useCallback(async () => {
     try {
-      const p = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "projects", args: [BigInt(projectId)] });
-      const ms = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "getProjectMilestones", args: [BigInt(projectId)] });
-      setProject(p); setMilestones(ms as any[]);
+      const raw = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "projects", args: [BigInt(projectId)] }) as any;
+      // viem returns multi-output as array: [client, freelancer, name, description, paymentToken, totalAmount, releasedAmount, milestoneCount, createdAt, active, funded]
+      const p = Array.isArray(raw) ? {
+        client: raw[0], freelancer: raw[1], name: raw[2], description: raw[3],
+        paymentToken: raw[4], totalAmount: raw[5], releasedAmount: raw[6],
+        milestoneCount: raw[7], createdAt: raw[8], active: raw[9], funded: raw[10],
+      } : raw;
+
+      const rawMs = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "getProjectMilestones", args: [BigInt(projectId)] }) as any[];
+      // Each milestone: [description, amount, status, submittedAt, autoReleasePaused]
+      const ms = rawMs.map((m: any) => Array.isArray(m) ? {
+        description: m[0], amount: m[1], status: m[2], submittedAt: m[3], autoReleasePaused: m[4],
+      } : m);
+
+      setProject(p); setMilestones(ms);
     } catch { setError("Failed to load project"); } finally { setLoading(false); }
   }, [projectId]);
 
@@ -80,15 +92,15 @@ export default function ProjectView({ projectId, walletClient, userAddress }: Pr
           <div><span className="text-[var(--text-tertiary)]">Client</span><p className="mono text-[11px] mt-0.5">{project.client.slice(0,8)}...{project.client.slice(-6)}{isClient && <span className="text-[var(--accent-text)] ml-1 font-sans">(you)</span>}</p></div>
           <div><span className="text-[var(--text-tertiary)]">Freelancer</span><p className="mono text-[11px] mt-0.5">{project.freelancer.slice(0,8)}...{project.freelancer.slice(-6)}{isFreelancer && <span className="text-[var(--accent-text)] ml-1 font-sans">(you)</span>}</p></div>
         </div>
-        <div className="flex items-center gap-3"><div className="flex-1 h-1.5 bg-[var(--bg-elevated)] rounded-full overflow-hidden"><div className="h-full bg-[var(--accent)] rounded-full transition-all duration-700" style={{ width: `${progress}%` }} /></div><span className="mono text-[11px] text-[var(--text-secondary)] whitespace-nowrap">{formatUnits(project.releasedAmount, 6)} / {formatUnits(project.totalAmount, 6)} USDT</span></div>
-        {!project.funded && isClient && project.active && <button onClick={handleDeposit} disabled={!!actionLoading} className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-[var(--accent)] text-white rounded-xl text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50">{actionLoading === "deposit" && <Loader2 size={15} className="animate-spin" />}Deposit {formatUnits(project.totalAmount, 6)} USDT</button>}
+        <div className="flex items-center gap-3"><div className="flex-1 h-1.5 bg-[var(--bg-elevated)] rounded-full overflow-hidden"><div className="h-full bg-[var(--accent)] rounded-full transition-all duration-700" style={{ width: `${progress}%` }} /></div><span className="mono text-[11px] text-[var(--text-secondary)] whitespace-nowrap">{formatUnits(project.releasedAmount, 6)} / {formatUnits(project.totalAmount, 6)} USDT0</span></div>
+        {!project.funded && isClient && project.active && <button onClick={handleDeposit} disabled={!!actionLoading} className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-[var(--accent)] text-white rounded-xl text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50">{actionLoading === "deposit" && <Loader2 size={15} className="animate-spin" />}Deposit {formatUnits(project.totalAmount, 6)} USDT0</button>}
       </div>
 
       <div className="stagger space-y-2">{milestones.map((m: any, i: number) => {
         const s = Number(m.status);
         return (
           <div key={i} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4">
-            <div className="flex items-start justify-between gap-3 mb-3"><div className="flex items-center gap-2"><span className="mono text-[10px] text-[var(--text-tertiary)] w-4">{i+1}</span><div><h4 className="text-sm font-medium">{m.description}</h4><span className="mono text-xs text-[var(--text-tertiary)]">{formatUnits(m.amount, 6)} USDT</span></div></div><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusStyle(s)}`}>{MILESTONE_STATUS[s]}</span></div>
+            <div className="flex items-start justify-between gap-3 mb-3"><div className="flex items-center gap-2"><span className="mono text-[10px] text-[var(--text-tertiary)] w-4">{i+1}</span><div><h4 className="text-sm font-medium">{m.description}</h4><span className="mono text-xs text-[var(--text-tertiary)]">{formatUnits(m.amount, 6)} USDT0</span></div></div><span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusStyle(s)}`}>{MILESTONE_STATUS[s]}</span></div>
             {s === 2 && m.submittedAt > 0n && <div className="flex items-center gap-2 text-[11px] mb-3 px-2.5 py-1.5 bg-[var(--bg)] rounded-md">{m.autoReleasePaused ? <><PauseCircle size={12} className="text-[var(--warning)]" /><span className="text-[var(--text-secondary)]">Auto-release paused</span></> : <><Clock size={12} className="text-[var(--text-tertiary)]" /><span className="text-[var(--text-secondary)]">Auto-releases 7 days after submission</span></>}</div>}
             <div className="flex flex-wrap gap-2">
               {isFreelancer && s === 1 && <Btn onClick={() => exec(`sub-${i}`, () => write("submitMilestone", [BigInt(projectId), BigInt(i)]))} isLoading={actionLoading === `sub-${i}`} variant="primary"><PlayCircle size={13} /> Submit for review</Btn>}

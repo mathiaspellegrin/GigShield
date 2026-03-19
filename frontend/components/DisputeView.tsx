@@ -29,15 +29,18 @@ export default function DisputeView({ disputeId, walletClient, userAddress }: Pr
 
   const load = useCallback(async () => {
     try {
-      const d: any = await read("disputes", [BigInt(disputeId)]);
+      const rawD: any = await read("disputes", [BigInt(disputeId)]);
+      const d = Array.isArray(rawD) ? { projectId: rawD[0], milestoneIndex: rawD[1], status: rawD[2], filedBy: rawD[3], clientEvidence: rawD[4], freelancerEvidence: rawD[5], filedAt: rawD[6], responseDeadline: rawD[7], votesForFreelancer: rawD[8], votesForClient: rawD[9], totalVotes: rawD[10], outcome: rawD[11] } : rawD;
       const a: any = await read("getDisputeArbitrators", [BigInt(disputeId)]);
       setDispute(d); setArbs([...a]);
-      const p: any = await read("projects", [d.projectId]);
+      const rawP: any = await read("projects", [d.projectId]);
+      const p = Array.isArray(rawP) ? { client: rawP[0], freelancer: rawP[1], name: rawP[2] } : rawP;
       setProjectName(p.name);
       const ms: any = await read("getProjectMilestones", [d.projectId]);
-      setMilestoneName(ms[Number(d.milestoneIndex)].description);
+      const milestone = Array.isArray(ms[Number(d.milestoneIndex)]) ? { description: ms[Number(d.milestoneIndex)][0] } : ms[Number(d.milestoneIndex)];
+      setMilestoneName(milestone.description);
       const addr = userAddress?.toLowerCase() || "";
-      setIsParty(addr === p.client.toLowerCase() || addr === p.freelancer.toLowerCase());
+      setIsParty(addr === p.client?.toLowerCase() || addr === p.freelancer?.toLowerCase());
       const ia = a.some((x: string) => x.toLowerCase() === addr);
       setIsArb(ia);
       if (ia && userAddress) setHasVoted(await read("hasVoted", [BigInt(disputeId), userAddress]) as boolean);

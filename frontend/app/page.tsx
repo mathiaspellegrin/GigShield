@@ -166,8 +166,8 @@ export default function Home() {
                 },
                 {
                   icon: Zap,
-                  title: "Zero Gas Fees",
-                  desc: "Every transaction sponsored by the platform. Creating, approving, withdrawing — all free.",
+                  title: "Near-Zero Fees",
+                  desc: "Transactions cost less than $0.001 on Conflux. No platform fees, no hidden charges.",
                   color: "var(--success)",
                   bg: "var(--success-subtle)",
                 },

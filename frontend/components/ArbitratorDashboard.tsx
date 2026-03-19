@@ -24,7 +24,8 @@ export default function ArbitratorDashboard({ walletClient, userAddress, onViewD
       const cnt = Number(await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "disputeCount" }) as bigint);
       const found: DisputeSummary[] = [];
       for (let i = 0; i < cnt; i++) {
-        const d: any = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "disputes", args: [BigInt(i)] });
+        const raw: any = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "disputes", args: [BigInt(i)] });
+        const d = Array.isArray(raw) ? { projectId: raw[0], milestoneIndex: raw[1], status: raw[2], filedBy: raw[3], clientEvidence: raw[4], freelancerEvidence: raw[5], filedAt: raw[6], responseDeadline: raw[7], votesForFreelancer: raw[8], votesForClient: raw[9], totalVotes: raw[10], outcome: raw[11] } : raw;
         const arbs: any = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "getDisputeArbitrators", args: [BigInt(i)] });
         if (arbs.some((a: string) => a.toLowerCase() === userAddress.toLowerCase())) {
           const voted = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "hasVoted", args: [BigInt(i), userAddress as Address] }) as boolean;

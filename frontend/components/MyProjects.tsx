@@ -20,9 +20,10 @@ export default function MyProjects({ userAddress, onSelectProject }: Props) {
       const count = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "projectCount" }) as bigint;
       const found: ProjectSummary[] = [];
       for (let i = 0; i < Number(count); i++) {
-        const p: any = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "projects", args: [BigInt(i)] });
-        const isC = p.client.toLowerCase() === userAddress.toLowerCase();
-        const isF = p.freelancer.toLowerCase() === userAddress.toLowerCase();
+        const raw: any = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "projects", args: [BigInt(i)] });
+        const p = Array.isArray(raw) ? { client: raw[0], freelancer: raw[1], name: raw[2], description: raw[3], paymentToken: raw[4], totalAmount: raw[5], releasedAmount: raw[6], milestoneCount: raw[7], createdAt: raw[8], active: raw[9], funded: raw[10] } : raw;
+        const isC = p.client?.toLowerCase() === userAddress.toLowerCase();
+        const isF = p.freelancer?.toLowerCase() === userAddress.toLowerCase();
         if (isC || isF) found.push({ id: i, name: p.name, totalAmount: p.totalAmount, releasedAmount: p.releasedAmount, active: p.active, role: isC ? "client" : "freelancer" });
       }
       setProjects(found.reverse());

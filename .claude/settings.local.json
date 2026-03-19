@@ -27,7 +27,9 @@
       "Bash(taskkill:*)",
       "Bash(curl -s http://localhost:3000)",
       "Bash(grep -r 'private member' /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield/frontend --include=*.ts --include=*.tsx)",
-      "Bash(npm start:*)"
+      "Bash(npm start:*)",
+      "Bash(node -e \"const abi=require\\(''./constants/abi.json''\\); const p=abi.find\\(x=>x.name===''projects''\\); console.log\\(JSON.stringify\\(p?.outputs,null,2\\)\\)\")",
+      "Bash(node -e \"const abi=require\\(''./frontend/constants/abi.json''\\); const d=abi.find\\(x=>x.name===''disputes''\\); console.log\\(JSON.stringify\\(d?.outputs?.map\\(o=>o.name\\),null,2\\)\\)\")"
     ]
   }
 }
