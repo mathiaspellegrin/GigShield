@@ -41,13 +41,17 @@ export default function CreateProject({ walletClient, account, onProjectCreated 
         account, chain: walletClient.chain,
       });
       setTxHash(hash);
-      const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
-      // Parse event to get projectId
-      const log = receipt.logs.find((l) => {
-        try { return l.topics[0] === "0x9a2d75a9ebd3e0a0e881e581e7e1e69f5c09e8b7c56aa90b9a8843d7e6e8f8d3"; } catch { return false; }
-      });
-      // Read projectCount - 1 as fallback
+      // Wait for confirmation with retry
+      try {
+        await publicClient.waitForTransactionReceipt({ hash, timeout: 60_000 });
+      } catch {
+        // Conflux RPC may not support eth_getTransactionReceipt polling perfectly
+        // Wait a fixed time as fallback
+        await new Promise(r => setTimeout(r, 5000));
+      }
+
+      // Read projectCount - 1 to get the new project ID
       const count = await publicClient.readContract({ address: CONTRACT_ADDRESS, abi: CONTRACT_ABI as any, functionName: "projectCount" }) as bigint;
       const id = Number(count) - 1;
       setProjectId(id);

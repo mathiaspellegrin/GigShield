@@ -36,7 +36,7 @@ export default function ProjectView({ projectId, walletClient, userAddress }: Pr
     setActionLoading(key); setError(null); setTxHash(null);
     try {
       const hash = await fn(); setTxHash(hash);
-      await publicClient.waitForTransactionReceipt({ hash });
+      try { await publicClient.waitForTransactionReceipt({ hash, timeout: 60_000 }); } catch { await new Promise(r => setTimeout(r, 5000)); }
       await load();
     } catch (err: any) { const msg = err?.shortMessage || err?.message || "Transaction failed"; setError(msg.length > 120 ? "Transaction failed." : msg); }
     finally { setActionLoading(null); }

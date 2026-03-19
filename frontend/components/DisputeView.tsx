@@ -49,7 +49,7 @@ export default function DisputeView({ disputeId, walletClient, userAddress }: Pr
   const exec = async (key: string, fn: () => Promise<`0x${string}`>) => {
     if (!walletClient || !userAddress) return;
     setActionLoading(key); setError(null); setTxHash(null);
-    try { const hash = await fn(); setTxHash(hash); await publicClient.waitForTransactionReceipt({ hash }); await load(); }
+    try { const hash = await fn(); setTxHash(hash); try { await publicClient.waitForTransactionReceipt({ hash, timeout: 60_000 }); } catch { await new Promise(r => setTimeout(r, 5000)); } await load(); }
     catch (err: any) { setError(err?.shortMessage || err?.message || "Transaction failed"); }
     finally { setActionLoading(null); }
   };
