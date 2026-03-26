@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { formatUnits, type Address } from "viem";
-import { Loader2, Briefcase, ArrowRight } from "lucide-react";
-import { publicClient } from "@/utils/contracts";
+import { Loader2, Briefcase, ArrowRight, ChevronRight } from "lucide-react";
+import { publicClient, getTokenByAddress } from "@/utils/contracts";
 import CONTRACT_ABI from "@/constants/abi.json";
 
 const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "") as Address;
 
-interface ProjectSummary { id: number; name: string; totalAmount: bigint; releasedAmount: bigint; active: boolean; role: "client" | "freelancer"; }
+interface ProjectSummary { id: number; name: string; totalAmount: bigint; releasedAmount: bigint; active: boolean; role: "client" | "freelancer"; paymentToken: string; }
 interface Props { userAddress: string; onSelectProject: (id: number) => void; }
 
 export default function MyProjects({ userAddress, onSelectProject }: Props) {
@@ -24,7 +24,7 @@ export default function MyProjects({ userAddress, onSelectProject }: Props) {
         const p = Array.isArray(raw) ? { client: raw[0], freelancer: raw[1], name: raw[2], description: raw[3], paymentToken: raw[4], totalAmount: raw[5], releasedAmount: raw[6], milestoneCount: raw[7], createdAt: raw[8], active: raw[9], funded: raw[10] } : raw;
         const isC = p.client?.toLowerCase() === userAddress.toLowerCase();
         const isF = p.freelancer?.toLowerCase() === userAddress.toLowerCase();
-        if (isC || isF) found.push({ id: i, name: p.name, totalAmount: p.totalAmount, releasedAmount: p.releasedAmount, active: p.active, role: isC ? "client" : "freelancer" });
+        if (isC || isF) found.push({ id: i, name: p.name, totalAmount: p.totalAmount, releasedAmount: p.releasedAmount, active: p.active, role: isC ? "client" : "freelancer", paymentToken: p.paymentToken });
       }
       setProjects(found.reverse());
     } catch {} finally { setLoading(false); }
@@ -32,21 +32,65 @@ export default function MyProjects({ userAddress, onSelectProject }: Props) {
 
   useEffect(() => { load(); }, [load]);
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 size={20} className="animate-spin text-[var(--text-tertiary)]" /></div>;
-  if (projects.length === 0) return (<div className="text-center py-16 animate-fade-in"><div className="w-12 h-12 rounded-2xl bg-[var(--bg-elevated)] flex items-center justify-center mx-auto mb-4"><Briefcase size={20} className="text-[var(--text-tertiary)]" /></div><p className="text-[var(--text-secondary)] text-sm">No projects yet</p></div>);
+  if (loading) return <div className="flex items-center justify-center py-20"><Loader2 size={24} className="animate-spin text-[var(--accent)]" /></div>;
+
+  if (projects.length === 0) return (
+    <div className="text-center py-20 animate-fade-in">
+      <div className="w-14 h-14 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center mx-auto mb-5">
+        <Briefcase size={22} className="text-[var(--text-tertiary)]" />
+      </div>
+      <p className="text-[var(--text-secondary)] text-sm font-medium">No projects yet</p>
+      <p className="text-[var(--text-tertiary)] text-xs mt-1">Create your first project to get started</p>
+    </div>
+  );
 
   return (
-    <div className="stagger space-y-2">{projects.map((p) => {
-      const progress = p.totalAmount > 0n ? Number((p.releasedAmount * 100n) / p.totalAmount) : 0;
-      return (
-        <button key={p.id} onClick={() => onSelectProject(p.id)} className="w-full text-left bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4 card-hover group">
-          <div className="flex items-start justify-between gap-4"><div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1"><span className="mono text-[10px] text-[var(--text-tertiary)] bg-[var(--bg-elevated)] px-1.5 py-0.5 rounded">#{p.id}</span><span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${p.role === "client" ? "bg-[var(--accent-subtle)] text-[var(--accent-text)]" : "bg-[var(--success-subtle)] text-[var(--success)]"}`}>{p.role === "client" ? "Client" : "Freelancer"}</span></div>
-            <h3 className="font-medium text-sm truncate">{p.name}</h3>
-            <div className="flex items-center gap-3 mt-2"><div className="flex-1 h-1 bg-[var(--bg-elevated)] rounded-full overflow-hidden"><div className="h-full rounded-full transition-all duration-500" style={{ width: `${progress}%`, backgroundColor: p.active ? "var(--accent)" : "var(--success)" }} /></div><span className="mono text-[10px] text-[var(--text-tertiary)] whitespace-nowrap">{formatUnits(p.releasedAmount, 6)} / {formatUnits(p.totalAmount, 6)}</span></div>
-          </div><div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight size={14} className="text-[var(--text-tertiary)]" /></div></div>
-        </button>
-      );
-    })}</div>
+    <div className="stagger space-y-2">
+      {projects.map((p) => {
+        const progress = p.totalAmount > 0n ? Number((p.releasedAmount * 100n) / p.totalAmount) : 0;
+        const token = getTokenByAddress(p.paymentToken);
+        return (
+          <button
+            key={p.id}
+            onClick={() => onSelectProject(p.id)}
+            className="w-full text-left bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4 card-hover group"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="mono text-[10px] text-[var(--text-tertiary)] bg-[var(--bg-elevated)] px-2 py-0.5 rounded-md font-bold">#{p.id}</span>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${
+                    p.role === "client"
+                      ? "bg-indigo-500/10 text-indigo-400"
+                      : "bg-emerald-500/10 text-emerald-400"
+                  }`}>
+                    {p.role === "client" ? "Client" : "Freelancer"}
+                  </span>
+                  {!p.active && <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--bg-elevated)] text-[var(--text-tertiary)]">Complete</span>}
+                </div>
+                <h3 className="font-semibold text-sm truncate mb-2">{p.name}</h3>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-1.5 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${progress}%`,
+                        background: p.active ? "linear-gradient(90deg, #6366f1, #8b5cf6)" : "var(--success)",
+                      }}
+                    />
+                  </div>
+                  <span className="mono text-[10px] text-[var(--text-tertiary)] whitespace-nowrap">
+                    {formatUnits(p.releasedAmount, token.decimals)} / {formatUnits(p.totalAmount, token.decimals)} {token.symbol}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center mt-2 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0.5">
+                <ChevronRight size={16} className="text-[var(--text-tertiary)]" />
+              </div>
+            </div>
+          </button>
+        );
+      })}
+    </div>
   );
 }

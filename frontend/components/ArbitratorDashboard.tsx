@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { type WalletClient, type Address } from "viem";
-import { Scale, Loader2, CheckCircle2, ArrowRight, AlertTriangle } from "lucide-react";
+import { Scale, Loader2, CheckCircle2, ArrowRight, AlertTriangle, ChevronRight, Gavel, Clock } from "lucide-react";
 import { publicClient } from "@/utils/contracts";
 import CONTRACT_ABI from "@/constants/abi.json";
 
@@ -38,23 +38,106 @@ export default function ArbitratorDashboard({ walletClient, userAddress, onViewD
 
   useEffect(() => { load(); }, [load]);
 
-  if (loading) return <div className="flex justify-center py-16"><Loader2 size={20} className="animate-spin text-[var(--text-tertiary)]" /></div>;
-  if (!isArb) return (<div className="text-center py-16 animate-fade-in"><div className="w-12 h-12 rounded-2xl bg-[var(--bg-elevated)] flex items-center justify-center mx-auto mb-4"><Scale size={20} className="text-[var(--text-tertiary)]" /></div><p className="text-sm text-[var(--text-secondary)]">Not registered as arbitrator</p></div>);
+  if (loading) return <div className="flex justify-center py-20"><Loader2 size={24} className="animate-spin text-[var(--accent)]" /></div>;
+
+  if (!isArb) return (
+    <div className="text-center py-20 animate-fade-in">
+      <div className="w-14 h-14 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center mx-auto mb-5">
+        <Scale size={22} className="text-[var(--text-tertiary)]" />
+      </div>
+      <p className="text-sm text-[var(--text-secondary)] font-medium">Not registered as arbitrator</p>
+      <p className="text-xs text-[var(--text-tertiary)] mt-1">Contact the contract owner to register</p>
+    </div>
+  );
 
   const active = disputes.filter(d => d.status === 3 && !d.hasVoted);
+  const voted = disputes.filter(d => d.status === 3 && d.hasVoted);
   const resolved = disputes.filter(d => d.status === 4);
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-      <div className="grid grid-cols-3 gap-3">
-        {[{ label: "Needs vote", value: active.length, color: "var(--accent)" },{ label: "Voted", value: disputes.filter(d => d.status===3 && d.hasVoted).length, color: "var(--warning)" },{ label: "Resolved", value: resolved.length, color: "var(--success)" }].map(s => (
-          <div key={s.label} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4 text-center"><p className="mono text-2xl font-bold" style={{color:s.color}}>{s.value}</p><p className="text-[10px] uppercase tracking-wider text-[var(--text-tertiary)] mt-1">{s.label}</p></div>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3 stagger">
+        {[
+          { label: "Needs vote", value: active.length, gradient: "from-indigo-500/10 to-purple-500/5", color: "text-indigo-400" },
+          { label: "Voted", value: voted.length, gradient: "from-amber-500/10 to-orange-500/5", color: "text-amber-400" },
+          { label: "Resolved", value: resolved.length, gradient: "from-emerald-500/10 to-teal-500/5", color: "text-emerald-400" },
+        ].map(s => (
+          <div key={s.label} className={`bg-gradient-to-br ${s.gradient} bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-5 text-center`}>
+            <p className={`mono text-3xl font-bold ${s.color} number-glow`}>{s.value}</p>
+            <p className="text-[10px] uppercase tracking-widest text-[var(--text-tertiary)] mt-1.5 font-medium">{s.label}</p>
+          </div>
         ))}
       </div>
-      {active.length > 0 && <div><h3 className="text-xs font-medium uppercase tracking-wider text-[var(--text-tertiary)] mb-2">Awaiting Your Vote</h3><div className="stagger space-y-2">{active.map(d => (
-        <button key={d.id} onClick={() => onViewDispute(d.id)} className="w-full text-left bg-[var(--bg-card)] border border-[var(--accent)] border-opacity-30 rounded-xl p-4 card-hover group"><div className="flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center"><AlertTriangle size={14} className="text-[var(--accent)]" /></div><div><p className="text-sm font-medium">Dispute #{d.id}</p><p className="text-[11px] text-[var(--text-tertiary)]">Project #{d.projectId}, Milestone #{d.milestoneIndex+1}</p></div></div><ArrowRight size={14} className="text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity" /></div></button>
-      ))}</div></div>}
-      {disputes.length === 0 && <div className="text-center py-12"><p className="text-sm text-[var(--text-secondary)]">No disputes assigned yet</p></div>}
+
+      {/* Active disputes */}
+      {active.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-tertiary)] mb-3 flex items-center gap-2">
+            <div className="relative">
+              <div className="w-2 h-2 rounded-full bg-indigo-400" />
+              <div className="absolute inset-0 w-2 h-2 rounded-full bg-indigo-400 animate-ping opacity-30" />
+            </div>
+            Awaiting Your Vote
+          </h3>
+          <div className="stagger space-y-2">
+            {active.map(d => (
+              <button
+                key={d.id}
+                onClick={() => onViewDispute(d.id)}
+                className="w-full text-left bg-[var(--bg-card)] border border-indigo-500/20 rounded-xl p-4 card-hover group animate-[border-glow_3s_ease-in-out_infinite]"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                      <Gavel size={16} className="text-indigo-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">Dispute #{d.id}</p>
+                      <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">Project #{d.projectId} &middot; Milestone {d.milestoneIndex + 1}</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Voted disputes */}
+      {voted.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-tertiary)] mb-3 flex items-center gap-2">
+            <Clock size={12} /> Awaiting Resolution
+          </h3>
+          <div className="space-y-2">
+            {voted.map(d => (
+              <button key={d.id} onClick={() => onViewDispute(d.id)} className="w-full text-left bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4 card-hover group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                      <CheckCircle2 size={16} className="text-amber-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Dispute #{d.id}</p>
+                      <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">Voted &middot; Waiting for other arbitrators</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 transition-all" />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {disputes.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-sm text-[var(--text-secondary)]">No disputes assigned yet</p>
+          <p className="text-xs text-[var(--text-tertiary)] mt-1">You'll be notified when you're selected for a panel</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,17 @@ import CONTRACT_ABI from "@/constants/abi.json";
 
 const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "") as Address;
 export const USDT0_ADDRESS = (process.env.NEXT_PUBLIC_USDT0_ADDRESS || "") as Address;
+export const AXCNH_ADDRESS = "0x70bfd7f7eadf9b9827541272589a6b2bb760ae2e" as Address;
+
+export const SUPPORTED_TOKENS: { address: Address; symbol: string; decimals: number }[] = [
+  { address: USDT0_ADDRESS, symbol: "USDT0", decimals: 6 },
+  { address: AXCNH_ADDRESS, symbol: "AxCNH", decimals: 18 },
+];
+
+export function getTokenByAddress(address: string): { symbol: string; decimals: number } {
+  const token = SUPPORTED_TOKENS.find(t => t.address.toLowerCase() === address.toLowerCase());
+  return token ?? { symbol: "TOKEN", decimals: 18 };
+}
 
 // Read-only public client
 export const publicClient: PublicClient = createPublicClient({

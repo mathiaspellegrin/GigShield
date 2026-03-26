@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { type WalletClient, type Address } from "viem";
-import { Loader2, CheckCircle2, ArrowUpRight, Shield, User, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowUpRight, Shield, User, ThumbsUp, ThumbsDown, ExternalLink, AlertTriangle } from "lucide-react";
 import { publicClient, getExplorerUrl, DISPUTE_STATUS } from "@/utils/contracts";
 import CONTRACT_ABI from "@/constants/abi.json";
 
@@ -57,57 +57,194 @@ export default function DisputeView({ disputeId, walletClient, userAddress }: Pr
     finally { setActionLoading(null); }
   };
 
-  if (loading) return <div className="flex justify-center py-16"><Loader2 size={20} className="animate-spin text-[var(--text-tertiary)]" /></div>;
-  if (!dispute) return <div className="text-center py-16 text-sm text-[var(--text-tertiary)]">Dispute not found</div>;
+  if (loading) return <div className="flex justify-center py-20"><Loader2 size={24} className="animate-spin text-[var(--accent)]" /></div>;
+  if (!dispute) return <div className="text-center py-20 text-sm text-[var(--text-tertiary)]">Dispute not found</div>;
 
   const status = Number(dispute.status);
   const outcome = Number(dispute.outcome);
 
   return (
     <div className="max-w-2xl mx-auto space-y-4 animate-fade-in">
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5">
-        <div className="flex items-center gap-2 mb-3"><Shield size={16} className="text-[var(--danger)]" /><span className="mono text-[10px] text-[var(--text-tertiary)]">Dispute #{disputeId}</span>
-          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${status===4?"bg-[var(--success-subtle)] text-[var(--success)]":status===3?"bg-[var(--accent-subtle)] text-[var(--accent)]":"bg-[var(--warning-subtle)] text-[var(--warning)]"}`}>{DISPUTE_STATUS[status]}</span>
+      {/* Header */}
+      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-red-500/5 to-transparent rounded-bl-full pointer-events-none" />
+        <div className="relative">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+              <Shield size={14} className="text-red-400" />
+            </div>
+            <span className="mono text-xs text-[var(--text-tertiary)] font-bold">Dispute #{disputeId}</span>
+            <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg ${
+              status === 4
+                ? "bg-emerald-500/10 text-emerald-400"
+                : status === 3
+                ? "bg-indigo-500/10 text-indigo-400"
+                : "bg-amber-500/10 text-amber-400"
+            }`}>
+              {DISPUTE_STATUS[status]}
+            </span>
+          </div>
+          <h2 className="text-xl font-bold">{projectName}</h2>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">Milestone: {milestoneName}</p>
+
+          {status === 4 && (
+            <div className={`mt-5 px-5 py-4 rounded-xl text-sm font-semibold flex items-center gap-2.5 ${
+              outcome === 1
+                ? "bg-emerald-500/10 border border-emerald-500/15 text-emerald-400"
+                : "bg-amber-500/10 border border-amber-500/15 text-amber-400"
+            }`}>
+              <CheckCircle2 size={16} />
+              Resolved: {outcome === 1 ? "Released to freelancer" : "Returned to client"}
+            </div>
+          )}
         </div>
-        <h2 className="text-lg font-semibold">{projectName}</h2><p className="text-xs text-[var(--text-secondary)] mt-0.5">Milestone: {milestoneName}</p>
-        {status === 4 && <div className={`mt-4 px-4 py-3 rounded-xl text-sm font-medium ${outcome===1?"bg-[var(--success-subtle)] text-[var(--success)]":"bg-[var(--warning-subtle)] text-[var(--warning)]"}`}>Resolved: {outcome===1?"Released to freelancer":"Returned to client"}</div>}
       </div>
 
+      {/* Evidence */}
       <div className="grid md:grid-cols-2 gap-3">
-        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4"><div className="flex items-center gap-2 mb-3"><div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center"><User size={12} className="text-blue-600" /></div><span className="text-xs font-medium">Client</span></div><p className="text-sm text-[var(--text-secondary)] leading-relaxed">{dispute.clientEvidence || <span className="text-[var(--text-tertiary)] italic">No evidence submitted</span>}</p></div>
-        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4"><div className="flex items-center gap-2 mb-3"><div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center"><User size={12} className="text-green-600" /></div><span className="text-xs font-medium">Freelancer</span></div><p className="text-sm text-[var(--text-secondary)] leading-relaxed">{dispute.freelancerEvidence || <span className="text-[var(--text-tertiary)] italic">No evidence submitted</span>}</p></div>
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-5">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+              <User size={13} className="text-blue-400" />
+            </div>
+            <span className="text-xs font-semibold">Client Evidence</span>
+          </div>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+            {dispute.clientEvidence || <span className="text-[var(--text-tertiary)] italic">No evidence submitted</span>}
+          </p>
+        </div>
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-5">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <User size={13} className="text-emerald-400" />
+            </div>
+            <span className="text-xs font-semibold">Freelancer Evidence</span>
+          </div>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+            {dispute.freelancerEvidence || <span className="text-[var(--text-tertiary)] italic">No evidence submitted</span>}
+          </p>
+        </div>
       </div>
 
+      {/* Response form */}
       {isParty && status === 1 && dispute.filedBy.toLowerCase() !== userAddress?.toLowerCase() && (
-        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4">
-          <h3 className="text-xs font-medium uppercase tracking-wider text-[var(--text-tertiary)] mb-2">Submit Your Response</h3>
-          <textarea value={responseText} onChange={(e) => setResponseText(e.target.value)} placeholder="Present your evidence..." rows={3} className="w-full px-3.5 py-2.5 bg-[var(--bg)] border border-[var(--border)] rounded-lg text-sm placeholder:text-[var(--text-tertiary)] resize-none mb-3" />
-          <button onClick={() => exec("respond", () => write("submitDisputeResponse", [BigInt(disputeId), responseText]))} disabled={!responseText || !!actionLoading} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[var(--accent)] text-white rounded-lg text-sm font-medium disabled:opacity-40">{actionLoading==="respond" && <Loader2 size={14} className="animate-spin" />}Submit Response</button>
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-5">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-tertiary)] mb-3">Submit Your Response</h3>
+          <textarea value={responseText} onChange={(e) => setResponseText(e.target.value)} placeholder="Present your evidence..."
+            rows={3} className="w-full px-4 py-3 bg-[var(--bg)] border border-[var(--border)] rounded-xl text-sm placeholder:text-[var(--text-tertiary)] resize-none mb-3 transition-all" />
+          <button
+            onClick={() => exec("respond", () => write("submitDisputeResponse", [BigInt(disputeId), responseText]))}
+            disabled={!responseText || !!actionLoading}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[var(--accent)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--accent-hover)] transition-all btn-glow disabled:opacity-40 disabled:shadow-none"
+          >
+            {actionLoading === "respond" && <Loader2 size={14} className="animate-spin" />}
+            Submit Response
+          </button>
         </div>
       )}
 
+      {/* Voting panel */}
       {isArb && status === 3 && !hasVoted && (
-        <div className="bg-[var(--bg-card)] border-2 border-[var(--accent)] rounded-2xl p-5">
-          <h3 className="text-sm font-semibold mb-1">Cast Your Vote</h3><p className="text-xs text-[var(--text-secondary)] mb-4">Review both parties' evidence. Your vote is final.</p>
-          <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => exec("vf", () => write("voteOnDispute", [BigInt(disputeId), true]))} disabled={!!actionLoading} className="flex flex-col items-center gap-2 p-4 border border-green-200 rounded-xl hover:bg-[var(--success-subtle)] transition-colors disabled:opacity-40">{actionLoading==="vf"?<Loader2 size={20} className="animate-spin" />:<ThumbsUp size={20} className="text-[var(--success)]" />}<span className="text-xs font-medium">Release to freelancer</span></button>
-            <button onClick={() => exec("vc", () => write("voteOnDispute", [BigInt(disputeId), false]))} disabled={!!actionLoading} className="flex flex-col items-center gap-2 p-4 border border-red-200 rounded-xl hover:bg-[var(--danger-subtle)] transition-colors disabled:opacity-40">{actionLoading==="vc"?<Loader2 size={20} className="animate-spin" />:<ThumbsDown size={20} className="text-[var(--danger)]" />}<span className="text-xs font-medium">Return to client</span></button>
+        <div className="bg-[var(--bg-card)] border-2 border-indigo-500/30 rounded-2xl p-6 relative overflow-hidden animate-[border-glow_3s_ease-in-out_infinite]">
+          <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none" />
+          <div className="relative">
+            <h3 className="text-base font-bold mb-1">Cast Your Vote</h3>
+            <p className="text-xs text-[var(--text-secondary)] mb-5">Review both parties' evidence carefully. Your vote is final and cannot be changed.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => exec("vf", () => write("voteOnDispute", [BigInt(disputeId), true]))}
+                disabled={!!actionLoading}
+                className="flex flex-col items-center gap-3 p-5 bg-emerald-500/5 border border-emerald-500/20 rounded-xl hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all disabled:opacity-40 group"
+              >
+                {actionLoading === "vf"
+                  ? <Loader2 size={24} className="animate-spin text-emerald-400" />
+                  : <ThumbsUp size={24} className="text-emerald-400 group-hover:scale-110 transition-transform" />
+                }
+                <span className="text-xs font-semibold text-emerald-400">Release to freelancer</span>
+              </button>
+              <button
+                onClick={() => exec("vc", () => write("voteOnDispute", [BigInt(disputeId), false]))}
+                disabled={!!actionLoading}
+                className="flex flex-col items-center gap-3 p-5 bg-red-500/5 border border-red-500/20 rounded-xl hover:bg-red-500/10 hover:border-red-500/30 transition-all disabled:opacity-40 group"
+              >
+                {actionLoading === "vc"
+                  ? <Loader2 size={24} className="animate-spin text-red-400" />
+                  : <ThumbsDown size={24} className="text-red-400 group-hover:scale-110 transition-transform" />
+                }
+                <span className="text-xs font-semibold text-red-400">Return to client</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {isArb && hasVoted && status === 3 && <div className="bg-[var(--bg-elevated)] rounded-xl p-4 text-center text-sm text-[var(--text-secondary)]"><CheckCircle2 size={16} className="inline mr-1.5 text-[var(--success)]" />You've voted ({Number(dispute.totalVotes)}/3).</div>}
-
-      {status >= 3 && <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4">
-        <h3 className="text-xs font-medium uppercase tracking-wider text-[var(--text-tertiary)] mb-3">Votes</h3>
-        <div className="flex items-center gap-4">
-          <div className="flex-1"><div className="flex justify-between text-xs mb-1"><span className="text-[var(--success)]">Freelancer</span><span className="mono">{Number(dispute.votesForFreelancer)}</span></div><div className="h-1.5 bg-[var(--bg-elevated)] rounded-full overflow-hidden"><div className="h-full bg-[var(--success)] rounded-full" style={{width:`${(Number(dispute.votesForFreelancer)/3)*100}%`}} /></div></div>
-          <div className="flex-1"><div className="flex justify-between text-xs mb-1"><span className="text-[var(--danger)]">Client</span><span className="mono">{Number(dispute.votesForClient)}</span></div><div className="h-1.5 bg-[var(--bg-elevated)] rounded-full overflow-hidden"><div className="h-full bg-[var(--danger)] rounded-full" style={{width:`${(Number(dispute.votesForClient)/3)*100}%`}} /></div></div>
+      {/* Already voted */}
+      {isArb && hasVoted && status === 3 && (
+        <div className="bg-[var(--bg-elevated)] rounded-xl p-5 text-center border border-[var(--border)]">
+          <CheckCircle2 size={18} className="inline mr-2 text-[var(--success)]" />
+          <span className="text-sm text-[var(--text-secondary)] font-medium">You've voted ({Number(dispute.totalVotes)}/3 votes cast)</span>
         </div>
-      </div>}
+      )}
 
-      {txHash && <div className="flex items-center gap-2 px-4 py-2.5 bg-[var(--success-subtle)] border border-green-200 rounded-xl text-xs text-[var(--success)] animate-slide-down"><CheckCircle2 size={14} /> Confirmed <a href={getExplorerUrl(txHash)} target="_blank" rel="noopener noreferrer" className="ml-auto flex items-center gap-1 hover:underline">View <ArrowUpRight size={11} /></a></div>}
-      {error && <div className="px-4 py-2.5 bg-[var(--danger-subtle)] border border-red-200 rounded-xl text-xs text-[var(--danger)] animate-slide-down">{error}</div>}
+      {/* Vote tally */}
+      {status >= 3 && (
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-5">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-tertiary)] mb-4">Vote Tally</h3>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-xs mb-2">
+                <span className="text-emerald-400 font-medium flex items-center gap-1.5"><ThumbsUp size={12} /> Freelancer</span>
+                <span className="mono font-bold">{Number(dispute.votesForFreelancer)}/3</span>
+              </div>
+              <div className="h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
+                <div className="h-full bg-emerald-500 rounded-full transition-all duration-700" style={{ width: `${(Number(dispute.votesForFreelancer) / 3) * 100}%` }} />
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs mb-2">
+                <span className="text-red-400 font-medium flex items-center gap-1.5"><ThumbsDown size={12} /> Client</span>
+                <span className="mono font-bold">{Number(dispute.votesForClient)}/3</span>
+              </div>
+              <div className="h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
+                <div className="h-full bg-red-500 rounded-full transition-all duration-700" style={{ width: `${(Number(dispute.votesForClient) / 3) * 100}%` }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Arbitrators */}
+      {arbs.length > 0 && status >= 3 && (
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-5">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-[var(--text-tertiary)] mb-3">Panel</h3>
+          <div className="space-y-2">
+            {arbs.map((a, i) => (
+              <div key={i} className="flex items-center gap-2.5 px-3 py-2 bg-[var(--bg)] rounded-lg">
+                <div className="w-6 h-6 rounded-md bg-[var(--bg-elevated)] flex items-center justify-center">
+                  <span className="mono text-[10px] font-bold text-[var(--text-tertiary)]">{i + 1}</span>
+                </div>
+                <span className="mono text-xs text-[var(--text-secondary)]">{a.slice(0, 8)}...{a.slice(-6)}</span>
+                {a.toLowerCase() === userAddress?.toLowerCase() && (
+                  <span className="text-[10px] font-semibold text-[var(--accent-text)] bg-[var(--accent-subtle)] px-1.5 py-0.5 rounded">you</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Transaction feedback */}
+      {txHash && (
+        <div className="flex items-center gap-2 px-4 py-3 bg-emerald-500/10 border border-emerald-500/15 rounded-xl text-xs text-emerald-400 animate-slide-down font-medium">
+          <CheckCircle2 size={14} /> Confirmed
+          <a href={getExplorerUrl(txHash)} target="_blank" rel="noopener noreferrer" className="ml-auto flex items-center gap-1.5 hover:underline">
+            View on ConfluxScan <ArrowUpRight size={11} />
+          </a>
+        </div>
+      )}
+      {error && (
+        <div className="px-4 py-3 bg-red-500/10 border border-red-500/15 rounded-xl text-xs text-red-400 animate-slide-down font-medium">{error}</div>
+      )}
     </div>
   );
 }

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import {
   Shield, Plus, Search, ArrowRight, Lock, Zap, Scale,
-  Briefcase, Gavel, ChevronRight,
+  Briefcase, Gavel, ChevronRight, ExternalLink, Globe,
+  Users, TrendingUp, Clock,
 } from "lucide-react";
 import ConnectWallet from "@/components/ConnectWallet";
 import CreateProject from "@/components/CreateProject";
@@ -22,26 +23,21 @@ export default function Home() {
   const [activeProjectId, setActiveProjectId] = useState<number | null>(null);
   const [activeDisputeId, setActiveDisputeId] = useState<number | null>(null);
 
-  const goToProject = (id: number) => {
-    setActiveProjectId(id);
-    setView("project");
-  };
-
-  const goToDispute = (id: number) => {
-    setActiveDisputeId(id);
-    setView("dispute");
-  };
+  const goToProject = (id: number) => { setActiveProjectId(id); setView("project"); };
+  const goToDispute = (id: number) => { setActiveDisputeId(id); setView("dispute"); };
 
   const Nav = () => (
-    <header className="bg-[var(--bg-card)]/80 backdrop-blur-xl border-b border-[var(--border)] sticky top-0 z-50">
-      <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-6">
+    <header className="glass border-b border-[var(--border)] sticky top-0 z-50">
+      <div className="max-w-5xl mx-auto px-5 py-3.5 flex items-center justify-between">
+        <div className="flex items-center gap-8">
           <button
             onClick={() => setView("home")}
-            className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+            className="flex items-center gap-2.5 hover:opacity-80 transition-opacity group"
           >
-            <Shield size={20} className="text-[var(--accent)]" />
-            <span className="font-semibold text-sm tracking-tight">GigShield</span>
+            <div className="w-8 h-8 rounded-lg bg-[var(--accent)] flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/30 transition-shadow">
+              <Shield size={16} className="text-white" />
+            </div>
+            <span className="font-bold text-sm tracking-tight">GigShield</span>
           </button>
           {address && (
             <nav className="hidden md:flex items-center gap-1">
@@ -52,13 +48,13 @@ export default function Home() {
                 <button
                   key={item.view}
                   onClick={() => setView(item.view)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
                     view === item.view
-                      ? "bg-[var(--bg-elevated)] text-[var(--text-primary)]"
-                      : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+                      ? "bg-[var(--accent-subtle)] text-[var(--accent-text)] shadow-sm"
+                      : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]"
                   }`}
                 >
-                  <item.icon size={13} />
+                  <item.icon size={14} />
                   {item.label}
                 </button>
               ))}
@@ -79,79 +75,107 @@ export default function Home() {
   const BackBtn = ({ to, label }: { to: View; label: string }) => (
     <button
       onClick={() => setView(to)}
-      className="flex items-center gap-1 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] mb-5 transition-colors"
+      className="inline-flex items-center gap-1.5 text-xs text-[var(--text-tertiary)] hover:text-[var(--accent-text)] mb-6 transition-colors group"
     >
-      &larr; {label}
+      <ChevronRight size={12} className="rotate-180 group-hover:-translate-x-0.5 transition-transform" />
+      {label}
     </button>
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       <Nav />
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-5 py-8 relative z-10">
         {/* ─── Home ─── */}
         {view === "home" && (
           <div className="animate-fade-in">
             {/* Hero */}
-            <div className="text-center pt-16 pb-20">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--accent-subtle)] rounded-full mb-6">
-                <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
-                <span className="text-[11px] font-medium text-[var(--accent-text)]">Live on Conflux eSpace</span>
-              </div>
-              <h1 className="text-4xl md:text-[3.5rem] font-bold leading-[1.1] tracking-tight mb-5">
-                Freelance payments,
-                <br />
-                <span className="text-[var(--accent)]">finally fair</span>
-              </h1>
-              <p className="text-base md:text-lg text-[var(--text-secondary)] max-w-md mx-auto mb-10 leading-relaxed">
-                Lock funds in escrow. Release on milestones.
-                Resolve disputes on-chain. Zero fees.
-              </p>
+            <div className="relative text-center pt-20 pb-24">
+              {/* Background dot grid */}
+              <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
 
-              {address ? (
-                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <button
-                    onClick={() => setView("create")}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-[var(--text-primary)] text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-                  >
-                    <Plus size={16} /> New Project
-                  </button>
-                  <button
-                    onClick={() => setView("projects")}
-                    className="flex items-center gap-2 px-5 py-2.5 border border-[var(--border)] rounded-full text-sm font-medium hover:bg-[var(--bg-elevated)] transition-colors"
-                  >
-                    <Briefcase size={16} /> My Projects
-                  </button>
-                  <div className="flex items-center gap-1.5">
-                    <input
-                      type="number"
-                      value={projectIdInput}
-                      onChange={(e) => setProjectIdInput(e.target.value)}
-                      placeholder="#"
-                      className="w-16 px-3 py-2.5 border border-[var(--border)] rounded-full text-center mono text-sm bg-[var(--bg)]"
-                    />
-                    <button
-                      onClick={() => {
-                        const id = parseInt(projectIdInput);
-                        if (!isNaN(id)) goToProject(id);
-                      }}
-                      disabled={!projectIdInput}
-                      className="p-2.5 border border-[var(--border)] rounded-full hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-30"
-                    >
-                      <Search size={15} />
-                    </button>
+              <div className="relative">
+                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-[var(--accent-subtle)] border border-[rgba(99,102,241,0.15)] rounded-full mb-8 animate-float">
+                  <div className="relative">
+                    <div className="w-2 h-2 rounded-full bg-[var(--accent)]" />
+                    <div className="absolute inset-0 w-2 h-2 rounded-full bg-[var(--accent)] animate-ping opacity-30" />
                   </div>
+                  <span className="text-xs font-medium text-[var(--accent-text)]">Live on Conflux eSpace</span>
                 </div>
-              ) : (
-                <button
-                  onClick={connect}
-                  disabled={loading}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--text-primary)] text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-                >
-                  Get Started <ArrowRight size={16} />
-                </button>
-              )}
+
+                <h1 className="text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight mb-6">
+                  Freelance payments,
+                  <br />
+                  <span className="gradient-text">finally fair</span>
+                </h1>
+
+                <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-lg mx-auto mb-12 leading-relaxed">
+                  Lock funds in escrow. Release on milestones.
+                  <br className="hidden md:block" />
+                  Resolve disputes on-chain. Near-zero fees.
+                </p>
+
+                {address ? (
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                    <button
+                      onClick={() => setView("create")}
+                      className="flex items-center gap-2.5 px-6 py-3 bg-[var(--accent)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--accent-hover)] transition-all btn-glow shadow-lg shadow-indigo-500/20"
+                    >
+                      <Plus size={16} /> New Project
+                    </button>
+                    <button
+                      onClick={() => setView("projects")}
+                      className="flex items-center gap-2.5 px-6 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl text-sm font-semibold hover:border-[var(--border-strong)] hover:bg-[var(--bg-card)] transition-all"
+                    >
+                      <Briefcase size={16} /> My Projects
+                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <div className="relative">
+                        <input
+                          type="number"
+                          value={projectIdInput}
+                          onChange={(e) => setProjectIdInput(e.target.value)}
+                          placeholder="#"
+                          className="w-16 px-3 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl text-center mono text-sm focus:border-[var(--accent)]"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          const id = parseInt(projectIdInput);
+                          if (!isNaN(id)) goToProject(id);
+                        }}
+                        disabled={!projectIdInput}
+                        className="p-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl hover:border-[var(--border-strong)] hover:bg-[var(--bg-card)] transition-all disabled:opacity-30"
+                      >
+                        <Search size={15} />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={connect}
+                    disabled={loading}
+                    className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-[var(--accent)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--accent-hover)] transition-all btn-glow shadow-lg shadow-indigo-500/25"
+                  >
+                    Get Started <ArrowRight size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Stats bar */}
+            <div className="grid grid-cols-3 gap-4 mb-16 max-w-2xl mx-auto stagger">
+              {[
+                { label: "Platform Fees", value: "0%", icon: TrendingUp },
+                { label: "Avg Gas Cost", value: "<$0.001", icon: Zap },
+                { label: "Dispute Resolution", value: "3-Panel", icon: Users },
+              ].map((s) => (
+                <div key={s.label} className="text-center py-4 px-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl">
+                  <p className="mono text-lg font-bold gradient-text mb-1">{s.value}</p>
+                  <p className="text-[10px] uppercase tracking-widest text-[var(--text-tertiary)]">{s.label}</p>
+                </div>
+              ))}
             </div>
 
             {/* Features */}
@@ -160,69 +184,80 @@ export default function Home() {
                 {
                   icon: Lock,
                   title: "Locked Escrow",
-                  desc: "Funds locked on-chain. Neither party can withdraw alone. Start work with confidence.",
-                  color: "var(--accent)",
-                  bg: "var(--accent-subtle)",
+                  desc: "Funds locked on-chain until work is verified. Neither party can withdraw unilaterally.",
+                  gradient: "from-indigo-500/10 to-purple-500/5",
+                  iconBg: "bg-indigo-500/10",
+                  iconColor: "text-indigo-400",
                 },
                 {
                   icon: Zap,
                   title: "Near-Zero Fees",
-                  desc: "Transactions cost less than $0.001 on Conflux. No platform fees, no hidden charges.",
-                  color: "var(--success)",
-                  bg: "var(--success-subtle)",
+                  desc: "Transactions under $0.001 on Conflux. No platform cuts, no hidden charges. Keep what you earn.",
+                  gradient: "from-emerald-500/10 to-teal-500/5",
+                  iconBg: "bg-emerald-500/10",
+                  iconColor: "text-emerald-400",
                 },
                 {
                   icon: Scale,
                   title: "Fair Arbitration",
-                  desc: "3-person panel resolves disputes. Transparent, on-chain, resolved in days not months.",
-                  color: "#7c3aed",
-                  bg: "#f5f3ff",
+                  desc: "3-person panel resolves disputes on-chain. Transparent votes, no black-box decisions.",
+                  gradient: "from-violet-500/10 to-fuchsia-500/5",
+                  iconBg: "bg-violet-500/10",
+                  iconColor: "text-violet-400",
                 },
               ].map((f) => (
                 <div
                   key={f.title}
-                  className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-5 card-hover"
+                  className={`relative overflow-hidden bg-gradient-to-br ${f.gradient} bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 card-hover group`}
                 >
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center mb-4"
-                    style={{ backgroundColor: f.bg }}
-                  >
-                    <f.icon size={17} style={{ color: f.color }} />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/[0.02] to-transparent rounded-bl-full" />
+                  <div className={`w-10 h-10 rounded-xl ${f.iconBg} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
+                    <f.icon size={18} className={f.iconColor} />
                   </div>
-                  <h3 className="font-semibold text-sm mb-1.5">{f.title}</h3>
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{f.desc}</p>
+                  <h3 className="font-semibold text-[15px] mb-2">{f.title}</h3>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{f.desc}</p>
                 </div>
               ))}
             </div>
 
             {/* How it works */}
-            <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-6 md:p-8 mb-16">
-              <h2 className="text-sm font-semibold mb-6 text-center uppercase tracking-wider text-[var(--text-tertiary)]">
+            <div className="relative bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-8 md:p-10 mb-16">
+              <h2 className="text-xs font-semibold mb-8 text-center uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
                 How it works
               </h2>
-              <div className="grid md:grid-cols-4 gap-6">
+              <div className="grid md:grid-cols-4 gap-8 stagger">
                 {[
-                  { n: "01", title: "Create", desc: "Define milestones and payment amounts" },
-                  { n: "02", title: "Deposit", desc: "Lock funds in the escrow contract" },
-                  { n: "03", title: "Deliver", desc: "Submit work, get milestone approval" },
-                  { n: "04", title: "Get Paid", desc: "Funds release instantly, no waiting" },
+                  { n: "01", title: "Create", desc: "Define milestones, amounts, and assign a freelancer", icon: Plus },
+                  { n: "02", title: "Deposit", desc: "Lock the full project amount in the smart contract", icon: Lock },
+                  { n: "03", title: "Deliver", desc: "Freelancer submits work, client reviews each milestone", icon: Clock },
+                  { n: "04", title: "Get Paid", desc: "Approved milestones release funds instantly", icon: TrendingUp },
                 ].map((s, i) => (
-                  <div key={s.n} className="text-center md:text-left">
-                    <span className="mono text-2xl font-bold text-[var(--bg-inset)]">{s.n}</span>
-                    <h4 className="font-medium text-sm mt-2 mb-1">{s.title}</h4>
-                    <p className="text-xs text-[var(--text-tertiary)]">{s.desc}</p>
+                  <div key={s.n} className="text-center group">
+                    <div className="w-12 h-12 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border)] flex items-center justify-center mx-auto mb-4 group-hover:border-[var(--accent)] group-hover:bg-[var(--accent-subtle)] transition-all">
+                      <span className="mono text-sm font-bold text-[var(--text-tertiary)] group-hover:text-[var(--accent-text)] transition-colors">{s.n}</span>
+                    </div>
+                    <h4 className="font-semibold text-sm mt-3 mb-1.5">{s.title}</h4>
+                    <p className="text-xs text-[var(--text-tertiary)] leading-relaxed">{s.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Footer */}
-            <div className="text-center text-xs text-[var(--text-tertiary)] pb-10">
-              Built on{" "}
-              <a href="https://confluxnetwork.org" target="_blank" rel="noopener noreferrer" className="text-[var(--accent-text)] hover:underline">
-                Conflux
-              </a>
-              {" "}&middot; Global Hackfest 2026
+            <div className="text-center pb-12">
+              <div className="flex items-center justify-center gap-3 text-xs text-[var(--text-tertiary)]">
+                <span>Built on</span>
+                <a
+                  href="https://confluxnetwork.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-[var(--accent-text)] hover:underline"
+                >
+                  <Globe size={12} /> Conflux
+                </a>
+                <span className="text-[var(--border-strong)]">/</span>
+                <span>Global Hackfest 2026</span>
+              </div>
             </div>
           </div>
         )}
@@ -230,13 +265,16 @@ export default function Home() {
         {/* ─── My Projects ─── */}
         {view === "projects" && address && (
           <div className="animate-fade-in">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold">My Projects</h2>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold">My Projects</h2>
+                <p className="text-xs text-[var(--text-tertiary)] mt-1">Projects where you're a client or freelancer</p>
+              </div>
               <button
                 onClick={() => setView("create")}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[var(--text-primary)] text-white rounded-lg text-xs font-medium hover:opacity-90 transition-opacity"
+                className="flex items-center gap-2 px-4 py-2.5 bg-[var(--accent)] text-white rounded-xl text-xs font-semibold hover:bg-[var(--accent-hover)] transition-all btn-glow"
               >
-                <Plus size={14} /> New
+                <Plus size={14} /> New Project
               </button>
             </div>
             <MyProjects userAddress={address} onSelectProject={goToProject} />
@@ -255,23 +293,18 @@ export default function Home() {
         {view === "project" && activeProjectId !== null && (
           <div className="animate-fade-in">
             <BackBtn to="projects" label="Projects" />
-            <ProjectView
-              projectId={activeProjectId}
-              walletClient={walletClient}
-              userAddress={address}
-            />
+            <ProjectView projectId={activeProjectId} walletClient={walletClient} userAddress={address} />
           </div>
         )}
 
         {/* ─── Arbitrator ─── */}
         {view === "arbitrator" && address && (
           <div className="animate-fade-in">
-            <h2 className="text-lg font-semibold mb-5">Arbitrator Dashboard</h2>
-            <ArbitratorDashboard
-              walletClient={walletClient}
-              userAddress={address}
-              onViewDispute={goToDispute}
-            />
+            <div className="mb-6">
+              <h2 className="text-xl font-bold">Arbitrator Dashboard</h2>
+              <p className="text-xs text-[var(--text-tertiary)] mt-1">Review disputes and cast your votes</p>
+            </div>
+            <ArbitratorDashboard walletClient={walletClient} userAddress={address} onViewDispute={goToDispute} />
           </div>
         )}
 
@@ -279,11 +312,7 @@ export default function Home() {
         {view === "dispute" && activeDisputeId !== null && (
           <div className="animate-fade-in">
             <BackBtn to="arbitrator" label="Arbitrator" />
-            <DisputeView
-              disputeId={activeDisputeId}
-              walletClient={walletClient}
-              userAddress={address}
-            />
+            <DisputeView disputeId={activeDisputeId} walletClient={walletClient} userAddress={address} />
           </div>
         )}
       </main>
