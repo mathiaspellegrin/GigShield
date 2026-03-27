@@ -5,7 +5,7 @@ import { formatUnits, type WalletClient, type Address } from "viem";
 import {
   Clock, CheckCircle2, AlertTriangle, Loader2, PauseCircle, PlayCircle,
   Shield, ArrowUpRight, ArrowRight, Copy, ExternalLink, Lock, Wallet, Send, Eye,
-  CircleDot, Info, Banknote, X,
+  CircleDot, Info, Banknote, X, Scale,
 } from "lucide-react";
 import { encodePacked, keccak256 } from "viem";
 import { publicClient, getExplorerUrl, getAddressExplorerUrl, MILESTONE_STATUS, ERC20_ABI, getTokenByAddress, DISPUTE_STATUS } from "@/utils/contracts";
@@ -537,6 +537,18 @@ export default function ProjectView({ projectId, walletClient, userAddress }: Pr
                             className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--accent)] text-white rounded-xl text-sm font-bold hover:bg-[var(--accent-hover)] transition-all btn-glow shadow-lg shadow-indigo-500/20"
                           >
                             <Send size={14} /> Submit Your Response
+                          </button>
+                        )}
+
+                        {/* Assign Arbitrators button — available after response or after deadline */}
+                        {(disputeStatus === 2 || (disputeStatus === 1 && deadlinePassed)) && (
+                          <button
+                            onClick={() => exec(`assign-${i}`, () => write("assignArbitrators", [BigInt(dd.id)]))}
+                            disabled={!!actionLoading}
+                            className="w-full flex items-center justify-center gap-2 py-3 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-500/15 transition-all disabled:opacity-40"
+                          >
+                            {actionLoading === `assign-${i}` ? <Loader2 size={14} className="animate-spin" /> : <Scale size={14} />}
+                            Assign Arbitration Panel
                           </button>
                         )}
 

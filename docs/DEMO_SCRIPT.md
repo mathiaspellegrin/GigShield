@@ -10,9 +10,9 @@
 
 Before recording:
 
-1. Deploy GigShield to Conflux eSpace Testnet with gas sponsorship enabled
+1. Deploy GigShield to Conflux eSpace Mainnet with gas sponsorship enabled
 2. Prepare two browser profiles (or two browsers) with MetaMask:
-   - **Client wallet** — funded with USDT0 testnet tokens
+   - **Client wallet** — funded with USDT0 or AxCNH tokens
    - **Freelancer wallet** — empty (to demonstrate gas-free experience)
 3. Register at least 3 arbitrator addresses via `registerArbitrator()`
 4. Have ConfluxScan open in a tab

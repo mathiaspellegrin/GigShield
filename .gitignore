@@ -1,10 +1,13 @@
 node_modules
 .env
+frontend/.env.local
+frontend/.next
+frontend/node_modules
+
+# Build artifacts
+artifacts
+cache
 coverage
 coverage.json
 typechain-types
-cache
-artifacts
-frontend/.next
-frontend/node_modules
-frontend/.env.local
+types

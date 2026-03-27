@@ -126,6 +126,18 @@ export default function DisputeView({ disputeId, walletClient, userAddress }: Pr
         </div>
       </div>
 
+      {/* Assign Arbitrators — after response submitted or deadline passed */}
+      {(status === 2 || (status === 1 && dispute.responseDeadline && Number(dispute.responseDeadline) * 1000 < Date.now())) && (
+        <button
+          onClick={() => exec("assign", () => write("assignArbitrators", [BigInt(disputeId)]))}
+          disabled={!!actionLoading}
+          className="w-full flex items-center justify-center gap-2 py-3.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-500/15 transition-all disabled:opacity-40"
+        >
+          {actionLoading === "assign" ? <Loader2 size={14} className="animate-spin" /> : <Shield size={14} />}
+          Assign Arbitration Panel
+        </button>
+      )}
+
       {/* Response form */}
       {isParty && status === 1 && dispute.filedBy.toLowerCase() !== userAddress?.toLowerCase() && (
         <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-5">

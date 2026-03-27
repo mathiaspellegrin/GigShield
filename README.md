@@ -2,9 +2,9 @@
 
 **Trustless Freelance Escrow on Conflux eSpace**
 
-GigShield is a decentralized escrow platform that protects both freelancers and clients through milestone-based payments, automatic release timers, and on-chain arbitration — all powered by USDT0 stablecoins with zero gas fees for end users.
+GigShield is a decentralized escrow platform that protects both freelancers and clients through milestone-based payments, automatic release timers, and on-chain arbitration — with multi-token support (USDT0, AxCNH) and near-zero gas fees for end users.
 
-> Built for the Conflux Hackathon 2026
+> Built for Conflux Global Hackfest 2026
 
 ---
 
@@ -21,8 +21,8 @@ GigShield is a trustless escrow layer purpose-built for independent freelancers:
 - **Milestone-based payments** — Funds release incrementally as work is delivered and approved.
 - **Auto-release timers** — If a client goes silent for 7 days, funds release automatically to the freelancer. No more payment ghosting.
 - **On-chain arbitration** — A 3-arbitrator panel votes on disputes with evidence from both sides. Transparent, final, and verifiable.
-- **Gas-free for users** — Conflux's native gas sponsorship means clients and freelancers never pay transaction fees.
-- **Stablecoin payments** — All escrows use USDT0, eliminating crypto volatility risk.
+- **Near-zero fees for users** — Conflux's native gas sponsorship means transactions cost less than $0.001.
+- **Multi-token payments** — Supports USDT0 and AxCNH, eliminating crypto volatility risk.
 
 ## Why Conflux?
 
@@ -32,6 +32,7 @@ Conflux eSpace's **built-in gas sponsorship** is the key enabler. Traditional es
 - A $100 freelance escrow is just as viable as a $10,000 one
 - Users interact with the dApp without holding CFX or understanding gas
 - The `SponsorWhitelistControl` precompile at `0x0888000000000000000000000000000000000001` makes this native and trustless
+- 3-second block times provide near-instant transaction confirmations
 
 This makes GigShield viable for the long tail of freelance work that no other chain can serve economically.
 
@@ -42,18 +43,19 @@ This makes GigShield viable for the long tail of freelance work that no other ch
 | Feature | Description |
 |---|---|
 | Milestone Escrow | Create projects with up to 20 milestones, each with defined amounts |
+| Multi-Token Support | Pay with USDT0 or AxCNH — select via visual token picker |
 | Full Escrow Deposit | Client deposits total project amount upfront into the contract |
 | Milestone Submission | Freelancer submits completed milestones for client review |
-| Client Approval | Instant fund release to freelancer upon approval |
+| Client Approval | Confirmation modal with amount breakdown before releasing funds |
 | Revision Requests | Client can request revisions before approving |
 | Auto-Release Timer | 7-day countdown after submission; funds auto-release if client is unresponsive |
 | Pause Mechanism | Client can pause auto-release once per milestone (prevents abuse) |
-| Dispute Filing | Either party can file a dispute with evidence |
-| 48-Hour Response Window | Opposing party has 48 hours to submit counter-evidence |
-| 3-Arbitrator Panel | Pseudo-random arbitrator selection from registered pool |
+| Dispute Filing | Either party can file a dispute with evidence via dedicated modal |
+| Dispute Response | Other party sees dispute details inline and responds via modal |
+| Arbitration Panel | Assign 3 pseudo-random arbitrators from registered pool |
 | Majority Voting | 2-of-3 vote determines outcome; funds route accordingly |
-| Gas Sponsorship | All user transactions are gas-free via Conflux sponsorship |
-| USDT0 Payments | Stablecoin-denominated escrows eliminate volatility |
+| Gas Sponsorship | All user transactions have near-zero fees via Conflux sponsorship |
+| Role-Aware UI | Status banners and action hints adapt to whether you're client or freelancer |
 
 ---
 
@@ -62,11 +64,23 @@ This makes GigShield viable for the long tail of freelance work that no other ch
 | Layer | Technology |
 |---|---|
 | Smart Contracts | Solidity 0.8.20, OpenZeppelin 5.x (Ownable, ReentrancyGuard, SafeERC20) |
-| Development | Hardhat, TypeScript, hardhat-toolbox |
-| Frontend | Next.js 14, TypeScript, ethers.js v6, Tailwind CSS, Lucide React |
-| Network | Conflux eSpace Testnet (chainId 71) |
-| Payments | USDT0 (ERC-20 stablecoin) |
+| Development | Hardhat 3.x, TypeScript |
+| Frontend | Next.js 16, React 19, TypeScript, viem, Tailwind CSS, Lucide React |
+| Network | Conflux eSpace Mainnet (chainId 1030) |
+| Payments | USDT0, AxCNH (ERC-20 tokens) |
 | Gas Sponsorship | Conflux SponsorWhitelistControl precompile |
+
+---
+
+## Live Deployment
+
+| Resource | Link |
+|---|---|
+| Contract | [`0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2`](https://evm.confluxscan.io/address/0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2) |
+| Network | Conflux eSpace Mainnet (chainId 1030) |
+| USDT0 Token | `0xaf37e8b6c9ed7f6318979f56fc287d76c30847ff` |
+| AxCNH Token | `0x70bfd7f7eadf9b9827541272589a6b2bb760ae2e` |
+| Gas Sponsorship | Enabled (2 CFX funded) |
 
 ---
 
@@ -75,13 +89,13 @@ This makes GigShield viable for the long tail of freelance work that no other ch
 ### Prerequisites
 
 - Node.js >= 18
-- npm or yarn
-- A wallet with Conflux eSpace Testnet CFX ([faucet](https://efaucet.confluxnetwork.org/))
+- npm
+- MetaMask or compatible wallet
 
 ### Smart Contracts
 
 ```bash
-# From the project root
+# Install dependencies
 npm install
 
 # Run tests
@@ -90,10 +104,10 @@ npx hardhat test
 # Run tests with coverage
 npx hardhat coverage
 
-# Deploy to Conflux eSpace Testnet
+# Deploy to Conflux eSpace Mainnet
 cp .env.example .env
 # Add your PRIVATE_KEY to .env
-npx hardhat run scripts/deploy.ts --network confluxTestnet
+npx hardhat run scripts/deploy.ts --network confluxMainnet
 ```
 
 ### Frontend
@@ -101,8 +115,6 @@ npx hardhat run scripts/deploy.ts --network confluxTestnet
 ```bash
 cd frontend
 npm install
-
-# Start development server
 npm run dev
 # Open http://localhost:3000
 ```
@@ -113,9 +125,9 @@ Create a `.env` file in the project root:
 
 ```
 PRIVATE_KEY=your_deployer_private_key
+NEXT_PUBLIC_CONTRACT_ADDRESS=0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2
+NEXT_PUBLIC_USDT0_ADDRESS=0xaf37e8b6c9ed7f6318979f56fc287d76c30847ff
 ```
-
-The frontend uses environment variables prefixed with `NEXT_PUBLIC_` for the contract address and network configuration.
 
 ---
 
@@ -123,9 +135,9 @@ The frontend uses environment variables prefixed with `NEXT_PUBLIC_` for the con
 
 ### GigShield.sol
 
-The core contract deployed on Conflux eSpace handles the full escrow lifecycle:
+The core contract handles the full escrow lifecycle:
 
-- **Address**: Deployed via `scripts/deploy.ts`
+- **Address**: [`0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2`](https://evm.confluxscan.io/address/0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2)
 - **License**: MIT
 - **Compiler**: Solidity 0.8.20 with optimizer (200 runs)
 
@@ -145,6 +157,31 @@ The core contract deployed on Conflux eSpace handles the full escrow lifecycle:
 - **Ownable** for admin functions (arbitrator management, sponsorship)
 - **Custom errors** for gas-efficient reverts
 - **Input validation** on all external functions (zero address checks, status checks)
+
+---
+
+## Usage
+
+### For Clients
+
+1. **Connect wallet** — MetaMask auto-switches to Conflux eSpace
+2. **Create project** — Name, description, freelancer address, token (USDT0 or AxCNH), milestones
+3. **Deposit escrow** — Lock the full amount in the smart contract
+4. **Review milestones** — Approve to release payment, or request revision
+5. **Dispute** — File with evidence if work doesn't match scope
+
+### For Freelancers
+
+1. **View project** — See milestones, amounts, and escrow status
+2. **Submit work** — Mark milestones complete for client review
+3. **Auto-release** — If client is unresponsive for 7 days, trigger auto-release
+4. **Respond to disputes** — Submit counter-evidence via modal
+
+### For Arbitrators
+
+1. **Dashboard** — See disputes assigned to you
+2. **Review evidence** — Read both parties' submissions
+3. **Vote** — Cast your vote (2-of-3 majority resolves the dispute)
 
 ---
 
@@ -180,9 +217,10 @@ GigShield is the **escrow layer for independent freelancers** — the safety net
 
 ### Differentiation
 
-- Zero gas fees (no other escrow platform offers this)
+- Near-zero gas fees (no other escrow platform offers this)
 - Auto-release timer protects freelancers by default
 - On-chain arbitration is transparent and verifiable
+- Multi-token support (USDT0, AxCNH)
 - Open-source contracts build trust
 
 ---
@@ -193,16 +231,16 @@ GigShield is the **escrow layer for independent freelancers** — the safety net
 |---|---|---|
 | Core escrow contract | Done | Milestone-based escrow with deposit, approve, release |
 | Auto-release timer | Done | 7-day auto-release with one-time pause |
-| Dispute system | Done | File, respond, arbitrate, resolve |
+| Dispute system | Done | File, respond, assign arbitrators, vote, resolve |
 | Gas sponsorship | Done | Conflux SponsorWhitelistControl integration |
-| Frontend dApp | Done | Next.js 14 interface for all contract interactions |
-| Test suite | Done | Comprehensive Hardhat tests with coverage |
-| Multi-token support | Planned | Support additional stablecoins beyond USDT0 |
+| Multi-token support | Done | USDT0 + AxCNH with visual token selector |
+| Frontend dApp | Done | Next.js 16 dark-themed interface with modals, role-aware UX |
+| Test suite | Done | 390+ test cases with comprehensive coverage |
+| Mainnet deployment | Done | Deployed to Conflux eSpace Mainnet (chainId 1030) |
 | Reputation system | Planned | On-chain reputation scores for clients and freelancers |
 | Partial milestone payments | Planned | Allow percentage-based partial releases |
 | Arbitrator staking | Planned | Require arbitrators to stake tokens for accountability |
-| Mainnet deployment | Planned | Deploy to Conflux eSpace Mainnet (chainId 1030) |
-| Mobile-responsive UI | Planned | Optimized mobile experience |
+| Mobile-optimized UI | Planned | Native mobile experience |
 
 ---
 
@@ -211,31 +249,48 @@ GigShield is the **escrow layer for independent freelancers** — the safety net
 ```
 GigShield/
 ├── contracts/
-│   ├── GigShield.sol              # Core escrow contract
+│   ├── GigShield.sol                  # Core escrow contract (608 lines)
 │   ├── interfaces/
-│   │   └── ISponsorWhitelistControl.sol  # Conflux sponsorship interface
+│   │   └── ISponsorWhitelistControl.sol
 │   └── mocks/
-│       └── MockERC20.sol          # Test token mock
+│       └── MockERC20.sol              # Test token mock
 ├── scripts/
-│   └── deploy.ts                  # Deployment script
+│   ├── deploy.ts                      # Deployment script
+│   └── addArbitrator.ts               # Arbitrator registration
 ├── test/
-│   └── GigShield.test.ts          # Test suite
+│   └── GigShield.test.ts              # 390+ test cases
 ├── frontend/
-│   └── ...                        # Next.js 14 application
+│   ├── app/
+│   │   ├── layout.tsx                 # Global layout
+│   │   ├── page.tsx                   # Landing page + navigation
+│   │   └── globals.css                # Dark theme, animations
+│   ├── components/
+│   │   ├── ConnectWallet.tsx           # Wallet connection
+│   │   ├── CreateProject.tsx           # 4-step project wizard
+│   │   ├── ProjectView.tsx             # Project detail + milestone actions
+│   │   ├── MyProjects.tsx              # User's project list
+│   │   ├── ArbitratorDashboard.tsx     # Arbitrator panel
+│   │   └── DisputeView.tsx             # Dispute detail + voting
+│   ├── hooks/useWallet.ts              # Wallet hook (viem)
+│   ├── utils/contracts.ts              # Contract helpers, token registry
+│   └── constants/abi.json              # Contract ABI
 ├── docs/
-│   ├── README.md                  # This file
-│   ├── ARCHITECTURE.md            # System design document
-│   ├── DEMO_SCRIPT.md             # Demo video script
-│   └── PARTICIPANT_INTRO_SCRIPT.md # Intro video script
-├── hardhat.config.ts              # Hardhat configuration
-└── package.json
+│   ├── ARCHITECTURE.md
+│   ├── DESIGN_DECISIONS.md
+│   ├── DEMO_SCRIPT.md
+│   └── PARTICIPANT_INTRO_SCRIPT.md
+├── demo/
+│   └── SUBMISSION_CHECKLIST.md
+├── hardhat.config.ts
+├── gigshield-spec.md
+└── instructions.md
 ```
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](../LICENSE) for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 

@@ -31,7 +31,12 @@
       "Bash(node -e \"const abi=require\\(''./constants/abi.json''\\); const p=abi.find\\(x=>x.name===''projects''\\); console.log\\(JSON.stringify\\(p?.outputs,null,2\\)\\)\")",
       "Bash(node -e \"const abi=require\\(''./frontend/constants/abi.json''\\); const d=abi.find\\(x=>x.name===''disputes''\\); console.log\\(JSON.stringify\\(d?.outputs?.map\\(o=>o.name\\),null,2\\)\\)\")",
       "Bash(head:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(grep -r 0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2 /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield/frontend --include=*.ts --include=*.tsx --include=*.js)",
+      "Bash(grep -r \"USDT0\\\\|AxCNH\" /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield --include=*.md)",
+      "Bash(grep -r \"ConnectWallet\\\\|CreateProject\\\\|ProjectView\\\\|MyProjects\\\\|ArbitratorDashboard\\\\|DisputeView\" /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield/frontend --include=*.tsx --include=*.ts)",
+      "Bash(find /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield/frontend/src/components -name *.tsx)",
+      "Bash(grep -r \"mainnet\\\\|1030\" /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield/frontend --include=*.ts --include=*.tsx)"
     ]
   }
 }

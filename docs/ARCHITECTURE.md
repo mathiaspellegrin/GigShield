@@ -10,13 +10,13 @@ GigShield is a single-contract system deployed on Conflux eSpace that manages th
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                     Frontend (Next.js 14)                │
-│        TypeScript + ethers.js v6 + Tailwind CSS          │
+│                     Frontend (Next.js 16)                │
+│        TypeScript + viem + Tailwind CSS          │
 └──────────────────────┬──────────────────────────────────┘
-                       │ JSON-RPC (ethers.js v6)
+                       │ JSON-RPC (viem)
                        ▼
 ┌─────────────────────────────────────────────────────────┐
-│              Conflux eSpace Testnet (chainId 71)         │
+│              Conflux eSpace Mainnet (chainId 1030)         │
 │                                                          │
 │  ┌─────────────────────────────────────────────────────┐ │
 │  │              GigShield.sol (Core Contract)           │ │
@@ -29,7 +29,7 @@ GigShield is a single-contract system deployed on Conflux eSpace that manages th
 │             │                      │                      │
 │             ▼                      ▼                      │
 │  ┌──────────────────┐   ┌─────────────────────────────┐  │
-│  │   USDT0 (ERC-20) │   │ SponsorWhitelistControl     │  │
+│  │ USDT0/AxCNH(ERC20)│   │ SponsorWhitelistControl     │  │
 │  │   Payment Token   │   │ 0x0888...0001 (precompile)  │  │
 │  └──────────────────┘   └─────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
@@ -93,7 +93,7 @@ Client                          GigShield Contract
 ### 2. Escrow Deposit
 
 ```
-Client                          GigShield         USDT0 Token
+Client                          GigShield         ERC-20 Token
   │                                │                    │
   │  approve(gigshield, total)     │                    │
   │────────────────────────────────┼───────────────────►│
@@ -131,7 +131,7 @@ Recording `submittedAt` starts the 7-day auto-release countdown.
 ### 4. Client Approval (Happy Path)
 
 ```
-Client                          GigShield         USDT0 Token
+Client                          GigShield         ERC-20 Token
   │                                │                    │
   │  approveMilestone(             │                    │
   │    projectId,                  │                    │
@@ -321,7 +321,7 @@ The `enableSponsorship()` function splits the deposited CFX evenly:
 | User must hold CFX for gas | User needs zero CFX |
 | User must understand gas | Completely invisible |
 | Small escrows lose value to gas | All escrow sizes are viable |
-| Onboarding friction | Wallet + USDT0 is enough |
+| Onboarding friction | Wallet + USDT0 or AxCNH is enough |
 
 ---
 
@@ -377,14 +377,14 @@ frontend/
 ├── src/
 │   └── app/                    # Next.js 14 App Router
 ├── public/                     # Static assets
-├── package.json                # Next.js 14 + ethers.js v6 + Tailwind
+├── package.json                # Next.js 14 + viem + Tailwind
 └── tailwind.config.ts          # Tailwind configuration
 ```
 
 ### Key Integration Points
 
-- **Wallet Connection**: ethers.js v6 `BrowserProvider` wrapping `window.ethereum`
-- **Contract Interaction**: ethers.js v6 `Contract` class with typed ABI
+- **Wallet Connection**: viem `BrowserProvider` wrapping `window.ethereum`
+- **Contract Interaction**: viem `Contract` class with typed ABI
 - **Network**: Conflux eSpace Testnet (chainId 71, RPC: `https://evmtestnet.confluxrpc.com`)
 - **Transaction Explorer**: Links to `https://evmtestnet.confluxscan.io`
 
