@@ -6,7 +6,7 @@ System design document for the GigShield trustless freelance escrow platform.
 
 ## System Overview
 
-GigShield is a single-contract system deployed on Conflux eSpace that manages the full lifecycle of freelance escrow agreements. The architecture prioritizes simplicity, security, and gas-free user interactions.
+GigShield is a single-contract system deployed on Conflux eSpace that manages the full lifecycle of freelance escrow agreements. The architecture prioritizes simplicity, security, and ultra-low-fee user interactions (native eSpace gas is ~$0.0001–$0.001 per tx).
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -25,13 +25,13 @@ GigShield is a single-contract system deployed on Conflux eSpace that manages th
 │  │  - Auto-release timer                               │ │
 │  │  - Dispute & arbitration system                     │ │
 │  │  - Arbitrator registry                              │ │
-│  └──────────┬──────────────────────┬───────────────────┘ │
-│             │                      │                      │
-│             ▼                      ▼                      │
-│  ┌──────────────────┐   ┌─────────────────────────────┐  │
-│  │ USDT0/AxCNH(ERC20)│   │ SponsorWhitelistControl     │  │
-│  │   Payment Token   │   │ 0x0888...0001 (precompile)  │  │
-│  └──────────────────┘   └─────────────────────────────┘  │
+│  └──────────┬──────────────────────────────────────────┘ │
+│             │                                            │
+│             ▼                                            │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  USDT0 / AnchorX AxCNH (ERC-20 stablecoins)        │ │
+│  │  Payment tokens held & released via SafeERC20      │ │
+│  └────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -43,7 +43,7 @@ GigShield is a single-contract system deployed on Conflux eSpace that manages th
 
 ```
 GigShield
-├── Ownable          (OpenZeppelin) — Admin access for arbitrator management and sponsorship
+├── Ownable          (OpenZeppelin) — Admin access for arbitrator management
 └── ReentrancyGuard  (OpenZeppelin) — Protection on all fund-releasing functions
     └── uses SafeERC20 (OpenZeppelin) — Safe ERC-20 interactions
 ```
@@ -289,39 +289,29 @@ The algorithm iterates through the arbitrator pool starting at `seed % pool.leng
 
 ---
 
-## Gas Sponsorship Architecture
+## Fee Model
 
-### How It Works
+### Native eSpace fees (today)
 
-Conflux eSpace has a built-in precompile at `0x0888000000000000000000000000000000000001` that enables any contract to sponsor gas for its users.
+Conflux eSpace base-layer transaction fees are ~$0.0001–$0.001 per tx — roughly 100–1,000× cheaper than Ethereum L1. For GigShield's worst-case flow (5–6 transactions across a full milestone cycle), the total user-paid gas is a fraction of a cent. This is what makes small-value escrows economically viable on-chain today, without any additional sponsorship layer.
+
+### Sponsorship-ready (post-hackathon)
+
+Conflux provides a `SponsorWhitelistControl` precompile at `0x0888000000000000000000000000000000000001` on **Core Space**, which lets a contract sponsor all gas and collateral costs for its users. The GigShield contract integrates the `ISponsorWhitelistControl` interface and exposes an `enableSponsorship()` owner function that wires up both gas and collateral sponsorship.
+
+This precompile does not live natively on eSpace. Full user-transparent sponsorship for an eSpace contract requires a Core-Space-side sponsor contract that bridges via `CrossSpaceCall` (CIP-90). Implementing that bridge is planned post-hackathon; the groundwork (interface + owner function) is already in place inside the deployed contract.
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                    Contract Deployment                       │
+│                    Planned Cross-Space Setup                │
 │                                                              │
-│  1. Deploy GigShield.sol                                     │
-│  2. Call enableSponsorship() with >= 2 CFX                   │
-│     ├── setSponsorForGas(contract, 0.5 CFX upper bound)      │
-│     └── setSponsorForCollateral(contract)                    │
-│  3. All subsequent user txs have gas paid by sponsor fund    │
+│  Core Space sponsor contract                                 │
+│    ├── setSponsorForGas(targetEspaceAddress, upperBound)    │
+│    └── addPrivilegeByAdmin(targetEspaceAddress, [all])      │
+│  CrossSpaceCall bridge (CIP-90) routes calls eSpace → Core  │
+│  eSpace users transact normally; sponsor fund pays gas      │
 └────────────────────────────────────────────────────────────┘
 ```
-
-### Sponsorship Split
-
-The `enableSponsorship()` function splits the deposited CFX evenly:
-
-- **50% for gas sponsorship** — Covers transaction execution costs. Upper bound set to 0.5 CFX per transaction.
-- **50% for collateral sponsorship** — Covers storage collateral costs on Conflux.
-
-### User Experience Impact
-
-| Without Sponsorship | With Sponsorship |
-|---|---|
-| User must hold CFX for gas | User needs zero CFX |
-| User must understand gas | Completely invisible |
-| Small escrows lose value to gas | All escrow sizes are viable |
-| Onboarding friction | Wallet + USDT0 or AxCNH is enough |
 
 ---
 
@@ -333,7 +323,7 @@ The `enableSponsorship()` function splits the deposited CFX evenly:
 |---|---|---|
 | ReentrancyGuard | Applied to `approveMilestone`, `triggerAutoRelease` | Reentrancy attacks during fund transfers |
 | SafeERC20 | All `safeTransfer` and `safeTransferFrom` calls | Non-standard ERC-20 tokens that don't return bool |
-| Ownable | Admin functions gated to deployer | Unauthorized arbitrator registration, sponsorship changes |
+| Ownable | Admin functions gated to deployer | Unauthorized arbitrator registration |
 | Custom Errors | Gas-efficient revert reasons | N/A (developer experience + gas savings) |
 | Input Validation | Zero-address checks, status checks, amount checks | Invalid state transitions, empty data |
 | Modifier Guards | `onlyClient`, `onlyFreelancer`, `onlyParty`, `projectActive` | Unauthorized access to project-specific actions |
@@ -393,6 +383,6 @@ frontend/
 1. User connects wallet (MetaMask or compatible)
 2. Frontend checks chainId === 71, prompts network switch if needed
 3. User initiates action (e.g., approve milestone)
-4. ethers.js sends transaction — gas is sponsored, user pays nothing
+4. viem sends the transaction — native eSpace gas (~$0.0001–$0.001) is paid by the user
 5. Frontend polls for receipt, updates UI on confirmation
 6. Links to ConfluxScan for transaction verification

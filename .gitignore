@@ -4,6 +4,11 @@ frontend/.env.local
 frontend/.next
 frontend/node_modules
 
+# Local IDE / agent settings
+.claude/
+.vscode/
+.idea/
+
 # Build artifacts
 artifacts
 cache

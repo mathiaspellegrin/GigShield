@@ -220,11 +220,11 @@ export default function Home() {
                 </a>
                 <span className="chain-chip">
                   <Coins size={12} className="text-emerald-400" />
-                  USDT0 + AxCNH
+                  USDT0 + AnchorX AxCNH
                 </span>
                 <span className="chain-chip">
                   <Sparkles size={12} className="text-amber-400" />
-                  Gas sponsored by contract
+                  Native fees &lt; $0.001 / tx
                 </span>
                 <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="chain-chip">
                   <Github size={12} />

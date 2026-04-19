@@ -23,13 +23,11 @@ Search `submission/projects/gigshield/README.md` for `<!-- TODO` and fill in:
 5. **Participant intro video URL** (paste after upload)
 6. **Live demo URL** (optional — if you host the frontend)
 
-## Recording the videos
+## Videos
 
-Scripts are in:
-- `docs/DEMO_SCRIPT.md` — 3–5 min demo
-- `docs/PARTICIPANT_INTRO_SCRIPT.md` — 30–60 sec intro (used at a Conflux event in Hong Kong, May 2026)
-
-Upload to YouTube (unlisted is fine) or Loom, then paste the URLs into the submission README.
+Both videos are recorded and linked in `submission/projects/gigshield/README.md`:
+- Demo: https://www.youtube.com/watch?v=Culycr6G7l8
+- Participant intro: https://youtube.com/shorts/LTbEHbvlz80
 
 ## Final pre-flight (do this before opening the PR)
 
@@ -47,6 +45,6 @@ Upload to YouTube (unlisted is fine) or Loom, then paste the URLs into the submi
 4. Post the tweet
 5. (Optional, +5 pts) Post the grant proposal on Conflux Forum, link it in the submission README
 
-## Optional +5 pts: grant proposal
+## +5 pts: grant proposal
 
-Not drafted yet. If you want it, follow the integration-grants template on forum.conflux.network. Workshop advice from Conflux team: keep it focused, one or two clear milestones, concrete KPIs tied to payment triggers, and include go-to-market KPIs (user growth, campaigns) — not just tech milestones. Ask a Conflux team member to review the draft before posting.
+✅ Posted: https://forum.conflux.fun/t/integration-grants-application-26-gigshield/23574

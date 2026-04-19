@@ -12,13 +12,11 @@ async function main() {
   const address = await gigShield.getAddress();
   console.log(`GigShield deployed to: ${address}`);
 
-  // Enable gas sponsorship with 2 CFX
-  console.log("Enabling gas sponsorship with 2 CFX...");
-  const tx = await gigShield.enableSponsorship({
-    value: ethers.parseEther("2.0"),
-  });
-  await tx.wait();
-  console.log("Gas sponsorship enabled!");
+  // Note: The SponsorWhitelistControl precompile lives on Conflux Core Space, not eSpace.
+  // Calling enableSponsorship() here from eSpace has no effect on user gas costs — native
+  // eSpace base fees (~$0.0001–$0.001 per tx) are what users pay today.
+  // Full gas sponsorship for an eSpace contract requires a Core-Space-side sponsor contract
+  // bridging via CrossSpaceCall (CIP-90), which is planned post-hackathon.
 
   console.log("\n--- Next Steps ---");
   console.log(`1. Update .env: NEXT_PUBLIC_CONTRACT_ADDRESS=${address}`);

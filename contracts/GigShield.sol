@@ -9,7 +9,7 @@ import "./interfaces/ISponsorWhitelistControl.sol";
 
 /// @title GigShield — Trustless Freelance Escrow
 /// @notice Milestone-based escrow with auto-release timers and on-chain arbitration
-/// @dev Uses USDT0 (ERC20) for payments. Gas sponsored via Conflux built-in sponsorship.
+/// @dev ERC-20 payments (USDT0, AnchorX AxCNH). Sponsorship hooks via Conflux ISponsorWhitelistControl (Core-Space bridge planned post-hackathon).
 contract GigShield is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 

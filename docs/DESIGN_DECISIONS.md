@@ -22,33 +22,32 @@ Every revert uses a custom error (`InvalidStatus`, `NotParty`, `AutoReleaseNotRe
 
 We use `ReentrancyGuard` on all fund-releasing functions (`approveMilestone`, `triggerAutoRelease`, dispute resolution), `SafeERC20` for all token transfers, and `Ownable` for admin access. Writing custom implementations of these patterns for a financial contract would be irresponsible — OpenZeppelin's implementations are battle-tested and audited.
 
-### 390+ test cases
+### Comprehensive test suite
 
-The test suite covers every public function, every access control check, every edge case we could identify (zero values, max milestones, double-voting, unauthorized access, auto-release timing). For a contract that holds user funds, comprehensive testing isn't optional.
+70 test cases cover every public function, every access control check, and every edge case we could identify (zero values, max milestones, double-voting, unauthorized access, auto-release timing, full dispute lifecycle). For a contract that holds user funds, comprehensive testing isn't optional.
 
 ---
 
 ## Why Conflux
 
-### Gas sponsorship as a product feature
+### Low native fees on eSpace
 
-This is the central design decision. GigShield targets freelance contracts in the $50-$2,000 range. On Ethereum, gas fees for a 3-milestone escrow (create + deposit + 3 approvals = 5 transactions) would cost $25-$250 depending on network conditions. That's 12-500% overhead on a $50 contract. It breaks the product.
+GigShield targets freelance contracts in the $50–$2,000 range. On Ethereum L1, gas fees for a 3-milestone escrow (create + deposit + 3 approvals = 5 transactions) can cost $25–$250 depending on network conditions — that's 12–500% overhead on a $50 contract. It breaks the product.
 
-Conflux's `SponsorWhitelistControl` precompile at `0x0888000000000000000000000000000000000001` solves this at the protocol level. The contract owner deposits CFX to sponsor gas, and the Conflux protocol itself covers transaction costs for whitelisted users. No meta-transactions, no relayer infrastructure, no backend. The implementation:
+Conflux eSpace's base-layer transaction fees are ~$0.0001–$0.001 per tx, 100–1,000× cheaper than Ethereum L1. A full 5-transaction escrow lifecycle costs a user less than a single cent, which is what makes sub-$500 contracts economically viable on-chain.
 
-```solidity
-function enableSponsorship() external payable onlyOwner {
-    address[] memory users = new address[](1);
-    users[0] = address(0);  // Whitelist ALL users
-    SPONSOR_CONTROL.addPrivilege(users);
+### Sponsorship-ready architecture (future work)
 
-    uint256 half = msg.value / 2;
-    SPONSOR_CONTROL.setSponsorForGas{value: half}(address(this), 0.5 ether);
-    SPONSOR_CONTROL.setSponsorForCollateral{value: msg.value - half}(address(this));
-}
-```
+The contract integrates Conflux's `ISponsorWhitelistControl` interface and exposes an `enableSponsorship()` owner function. This precompile lives on Conflux Core Space and is not yet directly callable from eSpace — full user-transparent sponsorship on eSpace requires a Core-Space-side sponsor contract bridging via `CrossSpaceCall` (CIP-90). That work is planned post-hackathon. Today the native eSpace fees are already low enough that the product works end-to-end without it.
 
-We whitelist `address(0)` (all users) and split the deposit between gas and collateral sponsorship. Every transaction — deposits, submissions, approvals, disputes, votes — costs users less than $0.001.
+### Stablecoin-first payments
+
+Escrows denominate in stablecoins, not volatile crypto. We support:
+
+- **USDT0** — Tether-compatible USD stablecoin on Conflux eSpace. The dominant stablecoin of the Conflux ecosystem and the center of the Conflux team's stablecoin narrative.
+- **AxCNH** — AnchorX's Chinese offshore yuan (CNH) stablecoin on Conflux eSpace. Opens the product to CNH-denominated contracts and serves a stablecoin market outside the USD monoculture.
+
+Users pick the token via a visual selector when creating a project. Both tokens are held and released through `SafeERC20`.
 
 ### 3-second block times
 
@@ -60,7 +59,7 @@ We chose eSpace over Core Space because it's EVM-compatible. This means standard
 
 ### Mainnet deployment
 
-The contract is deployed to Conflux eSpace Mainnet (chainId 1030) at [`0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2`](https://evm.confluxscan.io/address/0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2) with gas sponsorship funded and active.
+The contract is deployed to Conflux eSpace Mainnet (chainId 1030) at [`0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2`](https://evm.confluxscan.io/address/0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2). USDT0 and AxCNH are both accepted as payment tokens at launch.
 
 ---
 
@@ -143,7 +142,7 @@ These are conscious tradeoffs, not oversights:
 
 The contract is deployed and verifiable:
 - [ConfluxScan](https://evm.confluxscan.io/address/0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2)
-- `npx hardhat test` — 390+ tests pass
+- `npx hardhat test` — 70 tests pass
 - `cd frontend && npm run dev` — frontend runs locally
 
 ---

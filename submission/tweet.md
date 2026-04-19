@@ -6,10 +6,10 @@
 Just shipped GigShield for @ConfluxNetwork Global Hackfest 2026.
 
 Trustless freelance escrow on @ConfluxDevs eSpace:
-• Milestone payments in USDT0
+• Milestone payments in USDT0 + AnchorX AxCNH
 • 7-day auto-release (no more client ghosting)
-• On-chain arbitration
-• <$0.001 gas via Conflux sponsorship
+• On-chain arbitration (3-arbitrator panel)
+• Native eSpace fees < $0.001 per tx
 
 $100 gigs get the same protection as $10K ones.
 
@@ -18,14 +18,14 @@ github.com/mathiaspellegrin/GigShield
 #ConfluxHackathon
 ```
 
-Character count: ~385 (within 280 once URL auto-shortens to ~23 chars). If still over, use the shorter version below.
+Character count: ~395 (within 280 once URL auto-shortens to ~23 chars). If still over, use the shorter version below.
 
 ## Shorter version (280-char safe)
 
 ```
 Shipped GigShield for @ConfluxNetwork Global Hackfest 2026.
 
-Trustless freelance escrow on @ConfluxDevs eSpace: milestone payments in USDT0, 7-day auto-release, on-chain arbitration, <$0.001 gas.
+Trustless freelance escrow on @ConfluxDevs eSpace: milestone payments in USDT0 + AnchorX AxCNH, 7-day auto-release, on-chain arbitration. Native eSpace fees <$0.001/tx.
 
 $100 gigs get the same protection as $10K ones.
 
@@ -37,18 +37,18 @@ github.com/mathiaspellegrin/GigShield
 ## Optional thread follow-up (reply to the main tweet)
 
 ```
-2/ The unlock is Conflux's native gas sponsorship.
+2/ Why Conflux specifically?
 
-Escrow on Ethereum breaks for small gigs because gas eats the payment. On Conflux, the contract sponsor covers it — users pay less than $0.001 per tx.
+eSpace base fees are ~$0.0001–$0.001 per tx — 100–1000× cheaper than Ethereum L1. That's what makes sub-$500 freelance escrow economically viable on-chain for the first time.
 
-That's what makes sub-$500 freelance escrow finally viable.
+Plus USDT0 and AnchorX AxCNH are native — stablecoin payments, no volatility.
 ```
 
 ```
 3/ Full stack open-source:
-• Solidity 0.8.20 + OpenZeppelin
-• Next.js 16 + viem
-• USDT0 + AxCNH support
+• Solidity 0.8.20 + OpenZeppelin (ReentrancyGuard, SafeERC20)
+• Next.js 16 + React 19 + viem
+• USDT0 + AnchorX AxCNH support
 • 70 test cases
 
 Contract live on Conflux eSpace Mainnet:

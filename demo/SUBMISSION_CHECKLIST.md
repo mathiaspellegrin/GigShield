@@ -12,10 +12,10 @@
 - [ ] Final pass: `npx hardhat test` passes
 - [ ] Final pass: `cd frontend && npm run build` succeeds
 
-### 2. Videos (USER ACTION REQUIRED)
-- [ ] Record demo video (3–5 min) using `docs/DEMO_SCRIPT.md` → upload to YouTube/Loom
-- [ ] Record participant intro video (30–60 sec) using `docs/PARTICIPANT_INTRO_SCRIPT.md` → upload to YouTube/Loom
-- [ ] Paste both URLs into `submission/projects/gigshield/README.md`
+### 2. Videos
+- [x] Demo video (7:30, approved by Conflux team) — https://www.youtube.com/watch?v=Culycr6G7l8
+- [x] Participant intro video (30–60 sec) — https://youtube.com/shorts/LTbEHbvlz80
+- [x] Both URLs pasted into `submission/projects/gigshield/README.md`
 
 ### 3. Hackathon Repo PR
 - [ ] Fork https://github.com/conflux-fans/global-hackfest-2026
