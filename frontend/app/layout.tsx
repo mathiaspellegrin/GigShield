@@ -16,7 +16,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "GigShield — Trustless Freelance Escrow",
   description:
-    "Milestone-based escrow that protects freelancers and clients. Zero fees, gas-free transactions, on-chain arbitration. Built on Conflux.",
+    "Milestone-based escrow that protects freelancers and clients. Near-zero fees (less than $0.001), on-chain arbitration, auto-release protection. Built on Conflux eSpace.",
 };
 
 export default function RootLayout({

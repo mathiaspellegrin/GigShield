@@ -240,3 +240,103 @@ input:focus, textarea:focus, select:focus {
 .number-glow {
   text-shadow: 0 0 30px currentColor;
 }
+
+/* ─── Hero mesh gradient (animated) ─── */
+@keyframes mesh-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33%      { transform: translate3d(2%, -3%, 0) scale(1.05); }
+  66%      { transform: translate3d(-2%, 2%, 0) scale(0.98); }
+}
+
+.hero-mesh {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+  filter: blur(80px);
+}
+.hero-mesh::before,
+.hero-mesh::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+.hero-mesh::before {
+  top: 8%;
+  left: 12%;
+  width: 44%;
+  height: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.35), transparent 60%);
+  animation: mesh-drift 18s ease-in-out infinite;
+}
+.hero-mesh::after {
+  bottom: 0%;
+  right: 8%;
+  width: 48%;
+  height: 55%;
+  background: radial-gradient(circle at 70% 70%, rgba(192, 132, 252, 0.28), transparent 60%);
+  animation: mesh-drift 22s ease-in-out infinite reverse;
+}
+
+/* ─── Scroll reveal ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 80ms; }
+.reveal-delay-2 { transition-delay: 160ms; }
+.reveal-delay-3 { transition-delay: 240ms; }
+.reveal-delay-4 { transition-delay: 320ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .hero-mesh::before,
+  .hero-mesh::after { animation: none; }
+  .animate-float { animation: none; }
+}
+
+/* ─── Connected timeline step ─── */
+.timeline-line {
+  background-image: linear-gradient(90deg,
+    var(--border) 0 50%,
+    transparent 50% 100%);
+  background-size: 10px 1px;
+  background-repeat: repeat-x;
+  background-position: left center;
+}
+
+/* ─── Trust-strip chip ─── */
+.chain-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+.chain-chip:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* ─── Hero bigger display typography ─── */
+.display-headline {
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
