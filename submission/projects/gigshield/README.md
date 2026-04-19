@@ -1,6 +1,6 @@
 # GigShield
 
-Trustless freelance escrow on Conflux eSpace — milestone-based payments with auto-release, on-chain arbitration, and near-zero gas fees.
+Trustless freelance escrow on Conflux eSpace — milestone-based stablecoin payments with auto-release protection and on-chain arbitration.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Conflux](https://img.shields.io/badge/built%20on-Conflux-blue)](https://confluxnetwork.org)
@@ -8,22 +8,22 @@ Trustless freelance escrow on Conflux eSpace — milestone-based payments with a
 
 ## Overview
 
-GigShield is a decentralized escrow platform for independent freelancers. Clients lock USDT0 or AxCNH into milestone-based escrows; freelancers submit work; clients approve and funds release instantly. If a client disappears, a 7-day auto-release timer protects the freelancer. Disputes are resolved by a 3-arbitrator on-chain panel.
+GigShield is a decentralized escrow platform for independent freelancers. Clients lock stablecoins — **USDT0** or **AxCNH (AnchorX's Chinese offshore yuan stablecoin)** — into milestone-based escrows. Freelancers submit work, clients approve, and funds release instantly. If a client disappears, a 7-day auto-release timer protects the freelancer. Disputes are resolved by a 3-arbitrator on-chain panel.
 
-What makes it viable: **Conflux's native gas sponsorship means users pay less than $0.001 per transaction**, so a $100 freelance gig gets the same protection as a $10,000 one — something no other chain can economically serve.
+**Why it matters for the Conflux ecosystem:** freelancing is a universal, globally-distributed use case that brings real, recurring transactional volume to eSpace — the exact activity Conflux has been prioritizing. GigShield also shipsfirst-class support for the two stablecoin assets Conflux is building its narrative around (USDT0 and AnchorX's AxCNH), directly anchoring the "stablecoin + real-world assets" story to an actual user-facing product instead of a speculative pool.
 
 ## 🏆 Hackathon Information
 
 - **Event**: Global Hackfest 2026
-- **Focus Area**: Best USDT0 Integration (category), Main Award (overall)
-- **Team**: <!-- TODO: team name (or "Solo") -->
+- **Focus Area**: Best USDT0 Integration + Best AnchorX Integration (category tracks), Main Award (overall)
+- **Team**: MBP Enterprises LTD
 - **Submission Date**: 2026-04-20 @ 11:59:59 UTC
 
 ## 👥 Team
 
 | Name | Role | GitHub | Discord |
 |------|------|--------|---------|
-| <!-- TODO: Your full name --> | Founder / Full-stack | [@mathiaspellegrin](https://github.com/mathiaspellegrin) | <!-- TODO: discord handle --> |
+| Mathias Pellegrin | Founder / Full-stack | [@mathiaspellegrin](https://github.com/mathiaspellegrin) | mathiaspel |
 
 ## 🚀 Problem Statement
 
@@ -40,8 +40,8 @@ GigShield is a trustless escrow layer built specifically for independent freelan
 - **Milestone-based payments** — Funds release incrementally as work is delivered and approved.
 - **Auto-release timer** — If a client goes silent for 7 days, funds release automatically to the freelancer. No more ghosting.
 - **On-chain arbitration** — A 3-arbitrator panel votes on disputes with evidence from both sides. Transparent, final, verifiable.
-- **Near-zero gas fees** — Conflux gas sponsorship covers user transactions (< $0.001 each).
-- **Multi-token** — USDT0 and AxCNH supported, eliminating volatility risk.
+- **Stablecoin-native** — USDT0 and AxCNH supported as first-class payment tokens, eliminating crypto volatility risk for contract parties.
+- **eSpace economics** — Native eSpace transaction fees are tiny on Conflux (~$0.0001–$0.001), making small freelance contracts ($50–$500) economically viable on-chain for the first time. Contract-level sponsorship hooks are integrated for whitelisted users and designed to extend via cross-space bridging post-hackathon.
 
 ## Go-to-Market Plan (required)
 
@@ -62,14 +62,15 @@ GigShield is a trustless escrow layer built specifically for independent freelan
 
 **Revenue model:** Free during beta; 1% fee on successful escrow releases post-beta. Competitive vs. 10–20% on legacy platforms. Fee only applies on successful releases, not on disputes returned to client.
 
-**Why Conflux:** Gas sponsorship is the category-defining unlock — no other chain makes small-value escrow economical. Aligns with the USDT0 stablecoin narrative Conflux is pushing, and brings real transactions + users to the network.
+**Why Conflux:** Conflux eSpace's cheap native fees + the USDT0 and AxCNH stablecoin ecosystem are exactly what small-value freelance escrow needs. Every completed project is a real transaction and a real user — the kind of recurring activity Conflux is growing the ecosystem around.
 
 ## ⚡ Conflux Integration
 
-- [x] **eSpace** — Contract deployed to Conflux eSpace Mainnet (chainId 1030). Full EVM compatibility lets us use OpenZeppelin, viem, Hardhat.
-- [x] **Gas Sponsorship** — Integrated with `SponsorWhitelistControl` precompile at `0x0888000000000000000000000000000000000001`. Every user transaction (deposit, approve, submit, dispute, vote) costs users < $0.001. Whitelist is set to `address(0)` so all users are covered. Sponsored 2 CFX at launch.
-- [x] **Built-in Contracts** — Direct call into `SponsorWhitelistControl` precompile from `GigShield.sol` via the `ISponsorWhitelistControl` interface.
-- [x] **Native stablecoin ecosystem** — USDT0 + AxCNH as first-class payment tokens via visual token selector.
+- [x] **eSpace deployment** — Contract deployed to Conflux eSpace Mainnet (chainId 1030). Full EVM compatibility, verified via ConfluxScan.
+- [x] **USDT0 first-class integration** — USDT0 is a primary payment rail with a dedicated selector in the UI. Every escrow can be denominated in USDT0, eliminating volatility for clients and freelancers alike.
+- [x] **AnchorX AxCNH integration** — AxCNH (AnchorX's Chinese offshore yuan stablecoin on Conflux) is supported as a second native payment option, opening the product to CNH-denominated contracts — an underserved stablecoin market outside USD.
+- [x] **Sponsorship-ready architecture** — The contract integrates Conflux's sponsorship model (`ISponsorWhitelistControl`) and is configured for whitelisted addresses. Full gas-sponsored UX requires Core Space + CrossSpaceCall bridging and is planned for the next iteration post-hackathon.
+- [x] **Native low-fee economics** — Conflux eSpace's base-layer fees (~$0.0001–$0.001 per tx) make sub-$100 freelance contracts economically viable on-chain, which no Ethereum L1-based escrow can match.
 
 ## ✨ Features
 
@@ -104,8 +105,7 @@ GigShield is a trustless escrow layer built specifically for independent freelan
 
 ### Blockchain
 - **Network**: Conflux eSpace Mainnet (chainId 1030)
-- **Gas Sponsorship**: SponsorWhitelistControl precompile
-- **Payment Tokens**: USDT0, AxCNH
+- **Payment Tokens**: USDT0, AnchorX AxCNH
 
 ## 🏗️ Architecture
 
@@ -115,12 +115,6 @@ GigShield is a trustless escrow layer built specifically for independent freelan
 │   Dark UI      │     │   (chainId 1030)        │     │  Conflux eSpace  │
 └────────────────┘     └─────────────────────────┘     └──────────────────┘
         │                                                        │
-        │                                                        ▼
-        │                                              ┌──────────────────┐
-        │                                              │ SponsorWhitelist │
-        │                                              │ Control precomp. │
-        │                                              └──────────────────┘
-        │                                                        │
         ▼                                                        ▼
 ┌────────────────┐                                     ┌──────────────────┐
 │ Role-aware UX  │                                     │ USDT0 / AxCNH    │
@@ -129,44 +123,27 @@ GigShield is a trustless escrow layer built specifically for independent freelan
 └────────────────┘                                     └──────────────────┘
 ```
 
-The contract is a single `GigShield.sol` holding project state, milestones, disputes, and the arbitrator pool. Funds are held in-contract until approved, auto-released, or resolved via arbitration. Users never touch CFX for gas — the sponsor covers it.
+The contract is a single `GigShield.sol` holding project state, milestones, disputes, and the arbitrator pool. Funds are held in-contract until a milestone is approved, auto-released after 7 days of client inactivity, or resolved via the 3-arbitrator voting panel.
 
-## 📋 Prerequisites
+## 🚀 Getting Started
 
-- Node.js >= 18
-- npm
-- MetaMask (auto-switches to Conflux eSpace chainId 1030)
-
-## 🚀 Installation & Setup
+The project is deployed and fully functional. To run it locally:
 
 ```bash
 git clone https://github.com/mathiaspellegrin/GigShield.git
 cd GigShield
 npm install
-
-# Tests
-npx hardhat test
-
-# Coverage
-npx hardhat coverage
-
-# Deploy (optional — contract already deployed)
-cp .env.example .env  # fill PRIVATE_KEY
-npx hardhat run scripts/deploy.ts --network confluxMainnet
-
-# Frontend
-cd frontend
-npm install
-npm run dev
+cd frontend && npm install && npm run dev
 # http://localhost:3000
 ```
 
-## 🧪 Testing
+To run the smart-contract test suite:
 
 ```bash
-npx hardhat test        # 390+ test cases
-npx hardhat coverage    # coverage report
+npx hardhat test
 ```
+
+Everything else (deployment, sponsorship helpers, arbitrator registration) is documented in the repo's `scripts/` folder — not needed for evaluating or using the product.
 
 ## 📱 Usage
 
@@ -191,14 +168,14 @@ npx hardhat coverage    # coverage report
 ## 🎬 Demo
 
 ### Live Demo
-- **URL**: <!-- TODO: deployed frontend URL, if any -->
+- **URL**: https://gig-shield-git-master-mathiaspellegrins-projects.vercel.app
 - **Contract**: [0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2](https://evm.confluxscan.io/address/0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2)
 
-### Demo Video (3–5 min)
-- **URL**: <!-- TODO: paste YouTube / Loom link after recording -->
+### Demo Video
+- **URL**: https://www.youtube.com/watch?v=Culycr6G7l8
 
 ### Participant Intro Video (30–60 sec)
-- **URL**: <!-- TODO: paste YouTube / Loom link after recording -->
+- **URL**: https://youtube.com/shorts/LTbEHbvlz80
 
 ## 📄 Smart Contracts
 
@@ -224,7 +201,7 @@ npx hardhat coverage    # coverage report
 - **Ownable** for admin functions (arbitrator management, sponsorship)
 - **Custom errors** for gas-efficient reverts
 - **Input validation** on all external functions (zero address, status checks)
-- **390+ tests** covering happy paths, edge cases, and attack scenarios
+- **70 test cases** covering happy paths, edge cases, dispute flows, and attack scenarios
 
 ### Known Limitations
 - Arbitrators are currently centrally-whitelisted (owner adds them). Staking-based trustless arbitration is post-hackathon.
@@ -236,8 +213,8 @@ npx hardhat coverage    # coverage report
 - [x] Core escrow contract (milestones, deposit, approve, release)
 - [x] Auto-release timer with one-time pause
 - [x] Dispute system (file, respond, assign, vote, resolve)
-- [x] Gas sponsorship (SponsorWhitelistControl)
-- [x] Multi-token (USDT0 + AxCNH)
+- [x] Multi-token stablecoin support (USDT0 + AnchorX AxCNH)
+- [x] Sponsorship-ready contract architecture (full eSpace-side gas sponsorship requires Core Space + CrossSpaceCall bridging, planned post-hackathon)
 - [x] Next.js 16 dark-themed frontend, role-aware UX
 - [x] 70 test cases covering lifecycle, disputes, arbitration, edge cases
 - [x] Mainnet deployment
@@ -268,7 +245,7 @@ MIT — see [LICENSE](LICENSE).
 
 - **GitHub**: https://github.com/mathiaspellegrin/GigShield
 - **Team Lead**: [@mathiaspellegrin](https://github.com/mathiaspellegrin)
-- **Discord**: <!-- TODO: discord handle -->
+- **Discord**: mathiaspel
 
 ---
 

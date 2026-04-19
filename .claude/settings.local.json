@@ -40,7 +40,9 @@
       "Bash(gh repo *)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(curl -sL https://raw.githubusercontent.com/conflux-fans/global-hackfest-2026/main/projects/README.md)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "Bash(CHECK_ONLY=1 npx hardhat run scripts/whitelist-users.ts --network confluxMainnet)",
+      "Bash(curl *)"
     ]
   }
 }
