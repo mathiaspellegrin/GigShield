@@ -235,7 +235,7 @@ GigShield is the **escrow layer for independent freelancers** — the safety net
 | Gas sponsorship | Done | Conflux SponsorWhitelistControl integration |
 | Multi-token support | Done | USDT0 + AxCNH with visual token selector |
 | Frontend dApp | Done | Next.js 16 dark-themed interface with modals, role-aware UX |
-| Test suite | Done | 390+ test cases with comprehensive coverage |
+| Test suite | Done | 70 test cases with comprehensive coverage |
 | Mainnet deployment | Done | Deployed to Conflux eSpace Mainnet (chainId 1030) |
 | Reputation system | Planned | On-chain reputation scores for clients and freelancers |
 | Partial milestone payments | Planned | Allow percentage-based partial releases |
@@ -258,7 +258,7 @@ GigShield/
 │   ├── deploy.ts                      # Deployment script
 │   └── addArbitrator.ts               # Arbitrator registration
 ├── test/
-│   └── GigShield.test.ts              # 390+ test cases
+│   └── GigShield.test.ts              # 70 test cases
 ├── frontend/
 │   ├── app/
 │   │   ├── layout.tsx                 # Global layout

@@ -36,7 +36,11 @@
       "Bash(grep -r \"USDT0\\\\|AxCNH\" /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield --include=*.md)",
       "Bash(grep -r \"ConnectWallet\\\\|CreateProject\\\\|ProjectView\\\\|MyProjects\\\\|ArbitratorDashboard\\\\|DisputeView\" /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield/frontend --include=*.tsx --include=*.ts)",
       "Bash(find /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield/frontend/src/components -name *.tsx)",
-      "Bash(grep -r \"mainnet\\\\|1030\" /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield/frontend --include=*.ts --include=*.tsx)"
+      "Bash(grep -r \"mainnet\\\\|1030\" /c/Users/mathi/OneDrive/Bureau/pro/hackatons/GigShield/frontend --include=*.ts --include=*.tsx)",
+      "Bash(gh repo *)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -sL https://raw.githubusercontent.com/conflux-fans/global-hackfest-2026/main/projects/README.md)",
+      "Bash(git config *)"
     ]
   }
 }
