@@ -12,7 +12,7 @@ npm run dev
 
 ## Production deployment
 
-Live at https://gig-shield-git-master-mathiaspellegrins-projects.vercel.app
+Live at https://gig-shield-jade.vercel.app
 
 ## Environment
 

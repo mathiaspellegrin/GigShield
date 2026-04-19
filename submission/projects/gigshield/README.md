@@ -15,7 +15,7 @@
 
 | Deliverable | Link |
 |---|---|
-| **Live dApp (production)** | https://gig-shield-git-master-mathiaspellegrins-projects.vercel.app |
+| **Live dApp (production)** | https://gig-shield-jade.vercel.app |
 | **Smart contract (Conflux eSpace Mainnet)** | [0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2](https://evm.confluxscan.io/address/0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2) |
 | **Demo video** | https://www.youtube.com/watch?v=Culycr6G7l8 |
 | **Participant intro video** | https://youtube.com/shorts/LTbEHbvlz80 |
@@ -212,7 +212,7 @@ GigShield is a single-contract system holding project state, milestones, dispute
 ## 🎬 Demo
 
 ### Live Production dApp
-https://gig-shield-git-master-mathiaspellegrins-projects.vercel.app
+https://gig-shield-jade.vercel.app
 
 ### Demo Video (full end-to-end walkthrough)
 https://www.youtube.com/watch?v=Culycr6G7l8
@@ -258,7 +258,7 @@ Every claim in this document is independently verifiable by a reviewer:
 - **Contract deployed to Mainnet** — [ConfluxScan](https://evm.confluxscan.io/address/0x3F833d7c7fE06f65720DCD85791985d77dfcE7C2) shows the deployed bytecode, deployment tx, and all contract activity.
 - **Tests pass** — `npx hardhat test` in the repo produces `70 passing`.
 - **Frontend builds** — `cd frontend && npm run build` succeeds with zero errors.
-- **Live production dApp** — https://gig-shield-git-master-mathiaspellegrins-projects.vercel.app is reachable and functional.
+- **Live production dApp** — https://gig-shield-jade.vercel.app is reachable and functional.
 - **USDT0 integration** — Token address `0xaf37e8b6c9ed7f6318979f56fc287d76c30847ff` is hardcoded in the frontend token registry and accepted by the contract.
 - **AnchorX AxCNH integration** — Token address `0x70bfd7f7eadf9b9827541272589a6b2bb760ae2e` is hardcoded in the frontend token registry and accepted by the contract.
 - **Open source, MIT licensed** — Full source on GitHub, LICENSE present at repo root.
